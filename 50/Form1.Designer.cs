@@ -39,6 +39,8 @@ namespace _50
         bool m_bInit = false;
         bool m_bServoOn = false;
 
+        int currentGcode;
+
         #region Windows Form 設計工具產生的程式碼
 
         /// <summary>
@@ -50,18 +52,15 @@ namespace _50
             this.components = new System.ComponentModel.Container();
             this.tcl_Window00 = new System.Windows.Forms.TabControl();
             this.tp1_Test = new System.Windows.Forms.TabPage();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.txt_VelE = new System.Windows.Forms.TextBox();
-            this.txt_VelZ = new System.Windows.Forms.TextBox();
-            this.txt_VelY = new System.Windows.Forms.TextBox();
-            this.txt_VelX = new System.Windows.Forms.TextBox();
+            this.gbx_Gcode = new System.Windows.Forms.GroupBox();
+            this.txt_Z = new System.Windows.Forms.TextBox();
+            this.txt_Y = new System.Windows.Forms.TextBox();
+            this.txt_X = new System.Windows.Forms.TextBox();
+            this.txt_G = new System.Windows.Forms.TextBox();
+            this.btn_StartPrint = new System.Windows.Forms.Button();
+            this.btn_OpenFile = new System.Windows.Forms.Button();
+            this.dgv_Gcode = new System.Windows.Forms.DataGridView();
+            this.gbx_VelocitySet = new System.Windows.Forms.GroupBox();
             this.txt_VelHigh = new System.Windows.Forms.TextBox();
             this.btn_SetVel = new System.Windows.Forms.Button();
             this.gbx_MultipleAxisControl = new System.Windows.Forms.GroupBox();
@@ -111,11 +110,16 @@ namespace _50
             this.btn_CloseDevice = new System.Windows.Forms.Button();
             this.btn_OpenDevice = new System.Windows.Forms.Button();
             this.cbx_DeviceSelect = new System.Windows.Forms.ComboBox();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.time_State = new System.Windows.Forms.Timer(this.components);
             this.ofd_LoadConfigFile = new System.Windows.Forms.OpenFileDialog();
+            this.ofd_Gcode = new System.Windows.Forms.OpenFileDialog();
+            this.time_GcodeRead = new System.Windows.Forms.Timer(this.components);
+            this.time_GcodeSkip = new System.Windows.Forms.Timer(this.components);
             this.tcl_Window00.SuspendLayout();
             this.tp1_Test.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.gbx_Gcode.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_Gcode)).BeginInit();
+            this.gbx_VelocitySet.SuspendLayout();
             this.gbx_MultipleAxisControl.SuspendLayout();
             this.gbx_MoveWay.SuspendLayout();
             this.gbx_MultipleAxisState.SuspendLayout();
@@ -130,12 +134,13 @@ namespace _50
             this.tcl_Window00.Location = new System.Drawing.Point(0, 0);
             this.tcl_Window00.Name = "tcl_Window00";
             this.tcl_Window00.SelectedIndex = 0;
-            this.tcl_Window00.Size = new System.Drawing.Size(800, 600);
+            this.tcl_Window00.Size = new System.Drawing.Size(887, 715);
             this.tcl_Window00.TabIndex = 0;
             // 
             // tp1_Test
             // 
-            this.tp1_Test.Controls.Add(this.groupBox1);
+            this.tp1_Test.Controls.Add(this.gbx_Gcode);
+            this.tp1_Test.Controls.Add(this.gbx_VelocitySet);
             this.tp1_Test.Controls.Add(this.gbx_MultipleAxisControl);
             this.tp1_Test.Controls.Add(this.gbx_MoveWay);
             this.tp1_Test.Controls.Add(this.gbx_MultipleAxisState);
@@ -144,136 +149,106 @@ namespace _50
             this.tp1_Test.Controls.Add(this.gbx_DeviceConnect);
             this.tp1_Test.Location = new System.Drawing.Point(4, 22);
             this.tp1_Test.Name = "tp1_Test";
-            this.tp1_Test.Size = new System.Drawing.Size(792, 574);
+            this.tp1_Test.Size = new System.Drawing.Size(879, 689);
             this.tp1_Test.TabIndex = 0;
             this.tp1_Test.Text = "Test";
             this.tp1_Test.UseVisualStyleBackColor = true;
             // 
-            // groupBox1
+            // gbx_Gcode
             // 
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.textBox1);
-            this.groupBox1.Controls.Add(this.textBox2);
-            this.groupBox1.Controls.Add(this.textBox3);
-            this.groupBox1.Controls.Add(this.txt_VelE);
-            this.groupBox1.Controls.Add(this.txt_VelZ);
-            this.groupBox1.Controls.Add(this.txt_VelY);
-            this.groupBox1.Controls.Add(this.txt_VelX);
-            this.groupBox1.Controls.Add(this.txt_VelHigh);
-            this.groupBox1.Controls.Add(this.btn_SetVel);
-            this.groupBox1.Location = new System.Drawing.Point(444, 109);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(224, 206);
-            this.groupBox1.TabIndex = 6;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "MultipleAxisControl";
+            this.gbx_Gcode.Controls.Add(this.txt_Z);
+            this.gbx_Gcode.Controls.Add(this.txt_Y);
+            this.gbx_Gcode.Controls.Add(this.txt_X);
+            this.gbx_Gcode.Controls.Add(this.txt_G);
+            this.gbx_Gcode.Controls.Add(this.btn_StartPrint);
+            this.gbx_Gcode.Controls.Add(this.btn_OpenFile);
+            this.gbx_Gcode.Controls.Add(this.dgv_Gcode);
+            this.gbx_Gcode.Location = new System.Drawing.Point(8, 321);
+            this.gbx_Gcode.Name = "gbx_Gcode";
+            this.gbx_Gcode.Size = new System.Drawing.Size(868, 362);
+            this.gbx_Gcode.TabIndex = 7;
+            this.gbx_Gcode.TabStop = false;
+            this.gbx_Gcode.Text = "Gcode";
             // 
-            // label1
+            // txt_Z
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(200, 102);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(12, 12);
-            this.label1.TabIndex = 7;
-            this.label1.Text = "E";
+            this.txt_Z.Location = new System.Drawing.Point(6, 152);
+            this.txt_Z.Name = "txt_Z";
+            this.txt_Z.Size = new System.Drawing.Size(100, 22);
+            this.txt_Z.TabIndex = 10;
             // 
-            // label2
+            // txt_Y
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(200, 76);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(12, 12);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Z";
+            this.txt_Y.Location = new System.Drawing.Point(6, 124);
+            this.txt_Y.Name = "txt_Y";
+            this.txt_Y.Size = new System.Drawing.Size(100, 22);
+            this.txt_Y.TabIndex = 10;
             // 
-            // label3
+            // txt_X
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(200, 50);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(13, 12);
-            this.label3.TabIndex = 7;
-            this.label3.Text = "Y";
+            this.txt_X.Location = new System.Drawing.Point(6, 96);
+            this.txt_X.Name = "txt_X";
+            this.txt_X.Size = new System.Drawing.Size(100, 22);
+            this.txt_X.TabIndex = 10;
             // 
-            // label4
+            // txt_G
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(200, 24);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(13, 12);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "X";
+            this.txt_G.Location = new System.Drawing.Point(6, 68);
+            this.txt_G.Name = "txt_G";
+            this.txt_G.Size = new System.Drawing.Size(100, 22);
+            this.txt_G.TabIndex = 10;
             // 
-            // textBox1
+            // btn_StartPrint
             // 
-            this.textBox1.Location = new System.Drawing.Point(6, 99);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 22);
-            this.textBox1.TabIndex = 3;
-            this.textBox1.Text = "0";
+            this.btn_StartPrint.Location = new System.Drawing.Point(3, 286);
+            this.btn_StartPrint.Name = "btn_StartPrint";
+            this.btn_StartPrint.Size = new System.Drawing.Size(197, 70);
+            this.btn_StartPrint.TabIndex = 9;
+            this.btn_StartPrint.Text = "StartPrint";
+            this.btn_StartPrint.UseVisualStyleBackColor = true;
+            this.btn_StartPrint.Click += new System.EventHandler(this.btn_StartPrint_Click);
             // 
-            // textBox2
+            // btn_OpenFile
             // 
-            this.textBox2.Location = new System.Drawing.Point(6, 73);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 22);
-            this.textBox2.TabIndex = 3;
-            this.textBox2.Text = "0";
+            this.btn_OpenFile.Location = new System.Drawing.Point(3, 18);
+            this.btn_OpenFile.Name = "btn_OpenFile";
+            this.btn_OpenFile.Size = new System.Drawing.Size(197, 44);
+            this.btn_OpenFile.TabIndex = 9;
+            this.btn_OpenFile.Text = "OpenFile";
+            this.btn_OpenFile.UseVisualStyleBackColor = true;
+            this.btn_OpenFile.Click += new System.EventHandler(this.btn_OpenFile_Click);
             // 
-            // textBox3
+            // dgv_Gcode
             // 
-            this.textBox3.Location = new System.Drawing.Point(6, 47);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 22);
-            this.textBox3.TabIndex = 3;
-            this.textBox3.Text = "0";
+            this.dgv_Gcode.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_Gcode.Location = new System.Drawing.Point(206, 21);
+            this.dgv_Gcode.Name = "dgv_Gcode";
+            this.dgv_Gcode.RowTemplate.Height = 24;
+            this.dgv_Gcode.Size = new System.Drawing.Size(656, 335);
+            this.dgv_Gcode.TabIndex = 8;
             // 
-            // txt_VelE
+            // gbx_VelocitySet
             // 
-            this.txt_VelE.Location = new System.Drawing.Point(112, 99);
-            this.txt_VelE.Name = "txt_VelE";
-            this.txt_VelE.ReadOnly = true;
-            this.txt_VelE.Size = new System.Drawing.Size(82, 22);
-            this.txt_VelE.TabIndex = 3;
-            // 
-            // txt_VelZ
-            // 
-            this.txt_VelZ.Location = new System.Drawing.Point(112, 73);
-            this.txt_VelZ.Name = "txt_VelZ";
-            this.txt_VelZ.ReadOnly = true;
-            this.txt_VelZ.Size = new System.Drawing.Size(82, 22);
-            this.txt_VelZ.TabIndex = 3;
-            // 
-            // txt_VelY
-            // 
-            this.txt_VelY.Location = new System.Drawing.Point(112, 47);
-            this.txt_VelY.Name = "txt_VelY";
-            this.txt_VelY.ReadOnly = true;
-            this.txt_VelY.Size = new System.Drawing.Size(82, 22);
-            this.txt_VelY.TabIndex = 3;
-            // 
-            // txt_VelX
-            // 
-            this.txt_VelX.Location = new System.Drawing.Point(112, 21);
-            this.txt_VelX.Name = "txt_VelX";
-            this.txt_VelX.ReadOnly = true;
-            this.txt_VelX.Size = new System.Drawing.Size(82, 22);
-            this.txt_VelX.TabIndex = 3;
+            this.gbx_VelocitySet.Controls.Add(this.txt_VelHigh);
+            this.gbx_VelocitySet.Controls.Add(this.btn_SetVel);
+            this.gbx_VelocitySet.Location = new System.Drawing.Point(444, 109);
+            this.gbx_VelocitySet.Name = "gbx_VelocitySet";
+            this.gbx_VelocitySet.Size = new System.Drawing.Size(224, 121);
+            this.gbx_VelocitySet.TabIndex = 6;
+            this.gbx_VelocitySet.TabStop = false;
+            this.gbx_VelocitySet.Text = "VelocitySet";
             // 
             // txt_VelHigh
             // 
-            this.txt_VelHigh.Location = new System.Drawing.Point(6, 21);
+            this.txt_VelHigh.Location = new System.Drawing.Point(6, 37);
             this.txt_VelHigh.Name = "txt_VelHigh";
-            this.txt_VelHigh.Size = new System.Drawing.Size(100, 22);
+            this.txt_VelHigh.Size = new System.Drawing.Size(203, 22);
             this.txt_VelHigh.TabIndex = 3;
             this.txt_VelHigh.Text = "1000";
             // 
             // btn_SetVel
             // 
-            this.btn_SetVel.Location = new System.Drawing.Point(6, 168);
+            this.btn_SetVel.Location = new System.Drawing.Point(6, 82);
             this.btn_SetVel.Name = "btn_SetVel";
             this.btn_SetVel.Size = new System.Drawing.Size(203, 32);
             this.btn_SetVel.TabIndex = 4;
@@ -736,27 +711,42 @@ namespace _50
             this.cbx_DeviceSelect.Size = new System.Drawing.Size(121, 20);
             this.cbx_DeviceSelect.TabIndex = 0;
             // 
-            // timer1
+            // time_State
             // 
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.time_State.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // ofd_LoadConfigFile
             // 
             this.ofd_LoadConfigFile.FileName = "Config1";
             // 
+            // ofd_Gcode
+            // 
+            this.ofd_Gcode.FileName = "Config1";
+            // 
+            // time_GcodeRead
+            // 
+            this.time_GcodeRead.Tick += new System.EventHandler(this.time_GcodeRead_Tick);
+            // 
+            // time_GcodeSkip
+            // 
+            this.time_GcodeSkip.Tick += new System.EventHandler(this.time_GcodeSkip_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 562);
+            this.ClientSize = new System.Drawing.Size(886, 717);
             this.Controls.Add(this.tcl_Window00);
             this.Name = "Form1";
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.tcl_Window00.ResumeLayout(false);
             this.tp1_Test.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.gbx_Gcode.ResumeLayout(false);
+            this.gbx_Gcode.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_Gcode)).EndInit();
+            this.gbx_VelocitySet.ResumeLayout(false);
+            this.gbx_VelocitySet.PerformLayout();
             this.gbx_MultipleAxisControl.ResumeLayout(false);
             this.gbx_MultipleAxisControl.PerformLayout();
             this.gbx_MoveWay.ResumeLayout(false);
@@ -781,7 +771,7 @@ namespace _50
         private System.Windows.Forms.Button btn_OpenDevice;
         private System.Windows.Forms.GroupBox gbx_SingleAxisControl;
         private System.Windows.Forms.ComboBox cbx_AxisSelect;
-        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer time_State;
         private System.Windows.Forms.GroupBox gbx_AxisState;
         private System.Windows.Forms.TextBox tbx_AxisState;
         private System.Windows.Forms.TextBox tbx_AisxPosition;
@@ -825,20 +815,20 @@ namespace _50
         private System.Windows.Forms.Label lbl_StateX;
         private System.Windows.Forms.Label lbl_AxisState;
         private System.Windows.Forms.CheckBox ckb_Reverse;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox txt_VelE;
-        private System.Windows.Forms.TextBox txt_VelZ;
-        private System.Windows.Forms.TextBox txt_VelY;
-        private System.Windows.Forms.TextBox txt_VelX;
+        private System.Windows.Forms.GroupBox gbx_VelocitySet;
         private System.Windows.Forms.TextBox txt_VelHigh;
         private System.Windows.Forms.Button btn_SetVel;
+        private System.Windows.Forms.GroupBox gbx_Gcode;
+        private System.Windows.Forms.DataGridView dgv_Gcode;
+        private System.Windows.Forms.TextBox txt_Z;
+        private System.Windows.Forms.TextBox txt_Y;
+        private System.Windows.Forms.TextBox txt_X;
+        private System.Windows.Forms.TextBox txt_G;
+        private System.Windows.Forms.Button btn_StartPrint;
+        private System.Windows.Forms.Button btn_OpenFile;
+        private System.Windows.Forms.OpenFileDialog ofd_Gcode;
+        private System.Windows.Forms.Timer time_GcodeRead;
+        private System.Windows.Forms.Timer time_GcodeSkip;
     }
 }
 
