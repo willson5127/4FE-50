@@ -1,0 +1,10 @@
+c:\users\pro\documents\visual studio 2015\Projects\50\50\bin\Debug\50.exe.config
+c:\users\pro\documents\visual studio 2015\Projects\50\50\bin\Debug\50.exe
+c:\users\pro\documents\visual studio 2015\Projects\50\50\bin\Debug\50.pdb
+c:\users\pro\documents\visual studio 2015\Projects\50\50\obj\Debug\50.csprojResolveAssemblyReference.cache
+c:\users\pro\documents\visual studio 2015\Projects\50\50\obj\Debug\_50.Form1.resources
+c:\users\pro\documents\visual studio 2015\Projects\50\50\obj\Debug\_50.Properties.Resources.resources
+c:\users\pro\documents\visual studio 2015\Projects\50\50\obj\Debug\50.csproj.GenerateResource.Cache
+c:\users\pro\documents\visual studio 2015\Projects\50\50\obj\Debug\50.exe
+c:\users\pro\documents\visual studio 2015\Projects\50\50\obj\Debug\50.pdb
+c:\users\pro\documents\visual studio 2015\Projects\50\50\bin\Debug\AdvMotAPI.dll
