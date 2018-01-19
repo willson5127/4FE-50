@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Advantech.Motion;
+using Advantech.MotionComponent;    //研華
+
+using HalconDotNet; //hlacon
+
 using System.Runtime.InteropServices; //For Marshal
 using System.IO; // For commend "File"
 using System.Text.RegularExpressions; // For commend "Regex"
@@ -20,7 +24,7 @@ namespace _50
         public Form1()
         {
             InitializeComponent();
-
+                        
             tcl_Window00.Location = this.Location;
             tcl_Window00.Size = this.Size;
 
@@ -302,7 +306,26 @@ namespace _50
         //啟動軸卡
         private void btn_OpenDevice_Click(object sender, EventArgs e)
         {
+            UInt32 result;
+            uint uDeviceType = 0;           //軸卡型號代號
+
             OpenBoard();
+
+            /*//E
+            uDeviceType = DeviceNum >> 24 & 0xff;               //轉換代碼成型號代號
+            BoardID = (DeviceNum >> 12) & (0x00000fff);         //代碼轉換成ID
+
+
+            mD_ForAxisE.DeviceNumber = uDeviceType;
+            mD_ForAxisE.DeviceType = ((DevTypeID)uDeviceType).ToString();              //輸入型號名稱
+            mD_ForAxisE.BoardID = BoardID;                    //輸入ID
+            a_E.PhyID = (AxID)(3);      //E軸設定
+            result = a_E.Open();                              //開啟E軸
+            if (result != (uint)ErrorCode.SUCCESS)              //讀取是否成功?
+            {
+                MessageBox.Show("Error Code[0x" + Convert.ToString(result, 16) + "]:" + (ErrorCode)result, "PTP", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                return;
+            }*/
         }
 
         //軸之位置與狀態觀察計時器
@@ -356,6 +379,7 @@ namespace _50
                 }
                 tbx_AxisState.Text = strTemp;
 
+                //多軸
                 for (int i = 0; i < 4; i++)
                 {
                     Motion.mAcm_AxGetCmdPosition(m_Axishand[i], ref CurCmd);
@@ -410,6 +434,11 @@ namespace _50
                         default:
                             break;
                     }
+
+                    /*a_E.GetState(ref Es);                           //取得E軸狀態
+                    txt_StateE.Text = ((AxisState)Es).ToString();   //顯示E軸狀態
+                    a_E.GetCmdPosition(ref fe);                     //取得E軸座標
+                    txt_PositionE.Text = Convert.ToString(fe);            //顯示E軸座標*/
                 }
             }
         }
@@ -795,6 +824,33 @@ namespace _50
                     dgv_Gcode.CurrentCell = dgv_Gcode.Rows[currentGcode + 1].Cells[0];               //跳行
                 }
             }
+        }
+
+
+        //halcon測試
+        int HA = 0;
+        private HWindow window_A;
+        private HFramegrabber framegrabber_A;
+        private HImage image_A;
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (HA == 0)
+            {
+                window_A = hWindowControl1.HalconWindow;
+
+                framegrabber_A = new HFramegrabber("GigEVision", 0, 0, 0, 0, 0, 0, "default", -1,
+        "default", -1, "false", "default", "0030531de0c2_Basler_acA192050gm", 0, -1);
+
+                framegrabber_A.GrabImageStart(-1);
+                image_A = framegrabber_A.GrabImage();
+                image_A.DispObj(window_A);
+                //pictureBox1.Image = framegrabber_A.GrabImage();
+                HA = 1;
+            }
+            image_A = framegrabber_A.GrabImage();
+            image_A.DispObj(window_A);
+
         }
     }
 }

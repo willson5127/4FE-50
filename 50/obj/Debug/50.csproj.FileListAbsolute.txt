@@ -8,3 +8,7 @@ c:\users\pro\documents\visual studio 2015\Projects\50\50\obj\Debug\50.csproj.Gen
 c:\users\pro\documents\visual studio 2015\Projects\50\50\obj\Debug\50.exe
 c:\users\pro\documents\visual studio 2015\Projects\50\50\obj\Debug\50.pdb
 c:\users\pro\documents\visual studio 2015\Projects\50\50\bin\Debug\AdvMotAPI.dll
+C:\Users\Pro\Documents\Visual Studio 2015\Projects\50\50\bin\Debug\Advantech.Motion.dll
+C:\Users\Pro\Documents\Visual Studio 2015\Projects\50\50\bin\Debug\AdvGraph.dll
+C:\Users\Pro\Documents\Visual Studio 2015\Projects\50\50\bin\Debug\halcondotnet.dll
+C:\Users\Pro\Documents\Visual Studio 2015\Projects\50\50\bin\Debug\halcondotnet.xml

@@ -35,10 +35,13 @@ namespace _50
         double VelHigh = 1000;
         uint deviceCount = 0;
         uint DeviceNum = 0;
+        uint BoardID = 0;       //E軸卡ID
         uint m_ulAxisCount = 0;
         bool m_bInit = false;
         bool m_bServoOn = false;
 
+        double fe;
+        ushort Es;
         int currentGcode;
 
         #region Windows Form 設計工具產生的程式碼
@@ -115,6 +118,9 @@ namespace _50
             this.ofd_Gcode = new System.Windows.Forms.OpenFileDialog();
             this.time_GcodeRead = new System.Windows.Forms.Timer(this.components);
             this.time_GcodeSkip = new System.Windows.Forms.Timer(this.components);
+            this.tp1_HlaconTest = new System.Windows.Forms.TabPage();
+            this.hWindowControl1 = new HalconDotNet.HWindowControl();
+            this.button1 = new System.Windows.Forms.Button();
             this.tcl_Window00.SuspendLayout();
             this.tp1_Test.SuspendLayout();
             this.gbx_Gcode.SuspendLayout();
@@ -126,11 +132,13 @@ namespace _50
             this.gbx_AxisState.SuspendLayout();
             this.gbx_SingleAxisControl.SuspendLayout();
             this.gbx_DeviceConnect.SuspendLayout();
+            this.tp1_HlaconTest.SuspendLayout();
             this.SuspendLayout();
             // 
             // tcl_Window00
             // 
             this.tcl_Window00.Controls.Add(this.tp1_Test);
+            this.tcl_Window00.Controls.Add(this.tp1_HlaconTest);
             this.tcl_Window00.Location = new System.Drawing.Point(0, 0);
             this.tcl_Window00.Name = "tcl_Window00";
             this.tcl_Window00.SelectedIndex = 0;
@@ -244,7 +252,7 @@ namespace _50
             this.txt_VelHigh.Name = "txt_VelHigh";
             this.txt_VelHigh.Size = new System.Drawing.Size(203, 22);
             this.txt_VelHigh.TabIndex = 3;
-            this.txt_VelHigh.Text = "1000";
+            this.txt_VelHigh.Text = "10000";
             // 
             // btn_SetVel
             // 
@@ -731,6 +739,38 @@ namespace _50
             // 
             this.time_GcodeSkip.Tick += new System.EventHandler(this.time_GcodeSkip_Tick);
             // 
+            // tp1_HlaconTest
+            // 
+            this.tp1_HlaconTest.Controls.Add(this.button1);
+            this.tp1_HlaconTest.Controls.Add(this.hWindowControl1);
+            this.tp1_HlaconTest.Location = new System.Drawing.Point(4, 22);
+            this.tp1_HlaconTest.Name = "tp1_HlaconTest";
+            this.tp1_HlaconTest.Size = new System.Drawing.Size(879, 689);
+            this.tp1_HlaconTest.TabIndex = 1;
+            this.tp1_HlaconTest.Text = "Hlacon-Test";
+            this.tp1_HlaconTest.UseVisualStyleBackColor = true;
+            // 
+            // hWindowControl1
+            // 
+            this.hWindowControl1.BackColor = System.Drawing.Color.Black;
+            this.hWindowControl1.BorderColor = System.Drawing.Color.Black;
+            this.hWindowControl1.ImagePart = new System.Drawing.Rectangle(0, 0, 640, 480);
+            this.hWindowControl1.Location = new System.Drawing.Point(8, 3);
+            this.hWindowControl1.Name = "hWindowControl1";
+            this.hWindowControl1.Size = new System.Drawing.Size(380, 291);
+            this.hWindowControl1.TabIndex = 0;
+            this.hWindowControl1.WindowSize = new System.Drawing.Size(380, 291);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(394, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(336, 85);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -758,6 +798,7 @@ namespace _50
             this.gbx_SingleAxisControl.ResumeLayout(false);
             this.gbx_SingleAxisControl.PerformLayout();
             this.gbx_DeviceConnect.ResumeLayout(false);
+            this.tp1_HlaconTest.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -829,6 +870,9 @@ namespace _50
         private System.Windows.Forms.OpenFileDialog ofd_Gcode;
         private System.Windows.Forms.Timer time_GcodeRead;
         private System.Windows.Forms.Timer time_GcodeSkip;
+        private System.Windows.Forms.TabPage tp1_HlaconTest;
+        private System.Windows.Forms.Button button1;
+        private HalconDotNet.HWindowControl hWindowControl1;
     }
 }
 
