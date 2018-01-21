@@ -53,6 +53,7 @@ namespace _50
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tcl_Window00 = new System.Windows.Forms.TabControl();
             this.tp1_Test = new System.Windows.Forms.TabPage();
             this.gbx_Gcode = new System.Windows.Forms.GroupBox();
@@ -113,14 +114,22 @@ namespace _50
             this.btn_CloseDevice = new System.Windows.Forms.Button();
             this.btn_OpenDevice = new System.Windows.Forms.Button();
             this.cbx_DeviceSelect = new System.Windows.Forms.ComboBox();
+            this.tp1_HlaconTest = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
+            this.hWindowControl1 = new HalconDotNet.HWindowControl();
             this.time_State = new System.Windows.Forms.Timer(this.components);
             this.ofd_LoadConfigFile = new System.Windows.Forms.OpenFileDialog();
             this.ofd_Gcode = new System.Windows.Forms.OpenFileDialog();
             this.time_GcodeRead = new System.Windows.Forms.Timer(this.components);
             this.time_GcodeSkip = new System.Windows.Forms.Timer(this.components);
-            this.tp1_HlaconTest = new System.Windows.Forms.TabPage();
-            this.hWindowControl1 = new HalconDotNet.HWindowControl();
-            this.button1 = new System.Windows.Forms.Button();
+            this.tp1_Heating = new System.Windows.Forms.TabPage();
+            this.btn_HeatingTrigger = new System.Windows.Forms.Button();
+            this.lb_USBHeating = new System.Windows.Forms.ListBox();
+            this.lbl_USBState = new System.Windows.Forms.Label();
+            this.instantDoCtrl1 = new Automation.BDaq.InstantDoCtrl(this.components);
+            this.instantAiCtrl1 = new Automation.BDaq.InstantAiCtrl(this.components);
+            this.timer_USB = new System.Windows.Forms.Timer(this.components);
+            this.lbl_USBState2 = new System.Windows.Forms.Label();
             this.tcl_Window00.SuspendLayout();
             this.tp1_Test.SuspendLayout();
             this.gbx_Gcode.SuspendLayout();
@@ -133,11 +142,13 @@ namespace _50
             this.gbx_SingleAxisControl.SuspendLayout();
             this.gbx_DeviceConnect.SuspendLayout();
             this.tp1_HlaconTest.SuspendLayout();
+            this.tp1_Heating.SuspendLayout();
             this.SuspendLayout();
             // 
             // tcl_Window00
             // 
             this.tcl_Window00.Controls.Add(this.tp1_Test);
+            this.tcl_Window00.Controls.Add(this.tp1_Heating);
             this.tcl_Window00.Controls.Add(this.tp1_HlaconTest);
             this.tcl_Window00.Location = new System.Drawing.Point(0, 0);
             this.tcl_Window00.Name = "tcl_Window00";
@@ -719,6 +730,38 @@ namespace _50
             this.cbx_DeviceSelect.Size = new System.Drawing.Size(121, 20);
             this.cbx_DeviceSelect.TabIndex = 0;
             // 
+            // tp1_HlaconTest
+            // 
+            this.tp1_HlaconTest.Controls.Add(this.button1);
+            this.tp1_HlaconTest.Controls.Add(this.hWindowControl1);
+            this.tp1_HlaconTest.Location = new System.Drawing.Point(4, 22);
+            this.tp1_HlaconTest.Name = "tp1_HlaconTest";
+            this.tp1_HlaconTest.Size = new System.Drawing.Size(879, 689);
+            this.tp1_HlaconTest.TabIndex = 1;
+            this.tp1_HlaconTest.Text = "Hlacon-Test";
+            this.tp1_HlaconTest.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(394, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(336, 85);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // hWindowControl1
+            // 
+            this.hWindowControl1.BackColor = System.Drawing.Color.Black;
+            this.hWindowControl1.BorderColor = System.Drawing.Color.Black;
+            this.hWindowControl1.ImagePart = new System.Drawing.Rectangle(0, 0, 640, 480);
+            this.hWindowControl1.Location = new System.Drawing.Point(8, 3);
+            this.hWindowControl1.Name = "hWindowControl1";
+            this.hWindowControl1.Size = new System.Drawing.Size(380, 291);
+            this.hWindowControl1.TabIndex = 0;
+            this.hWindowControl1.WindowSize = new System.Drawing.Size(380, 291);
+            // 
             // time_State
             // 
             this.time_State.Tick += new System.EventHandler(this.timer1_Tick);
@@ -739,37 +782,68 @@ namespace _50
             // 
             this.time_GcodeSkip.Tick += new System.EventHandler(this.time_GcodeSkip_Tick);
             // 
-            // tp1_HlaconTest
+            // tp1_Heating
             // 
-            this.tp1_HlaconTest.Controls.Add(this.button1);
-            this.tp1_HlaconTest.Controls.Add(this.hWindowControl1);
-            this.tp1_HlaconTest.Location = new System.Drawing.Point(4, 22);
-            this.tp1_HlaconTest.Name = "tp1_HlaconTest";
-            this.tp1_HlaconTest.Size = new System.Drawing.Size(879, 689);
-            this.tp1_HlaconTest.TabIndex = 1;
-            this.tp1_HlaconTest.Text = "Hlacon-Test";
-            this.tp1_HlaconTest.UseVisualStyleBackColor = true;
+            this.tp1_Heating.Controls.Add(this.lbl_USBState2);
+            this.tp1_Heating.Controls.Add(this.lbl_USBState);
+            this.tp1_Heating.Controls.Add(this.lb_USBHeating);
+            this.tp1_Heating.Controls.Add(this.btn_HeatingTrigger);
+            this.tp1_Heating.Location = new System.Drawing.Point(4, 22);
+            this.tp1_Heating.Name = "tp1_Heating";
+            this.tp1_Heating.Size = new System.Drawing.Size(879, 689);
+            this.tp1_Heating.TabIndex = 2;
+            this.tp1_Heating.Text = "Heating";
+            this.tp1_Heating.UseVisualStyleBackColor = true;
             // 
-            // hWindowControl1
+            // btn_HeatingTrigger
             // 
-            this.hWindowControl1.BackColor = System.Drawing.Color.Black;
-            this.hWindowControl1.BorderColor = System.Drawing.Color.Black;
-            this.hWindowControl1.ImagePart = new System.Drawing.Rectangle(0, 0, 640, 480);
-            this.hWindowControl1.Location = new System.Drawing.Point(8, 3);
-            this.hWindowControl1.Name = "hWindowControl1";
-            this.hWindowControl1.Size = new System.Drawing.Size(380, 291);
-            this.hWindowControl1.TabIndex = 0;
-            this.hWindowControl1.WindowSize = new System.Drawing.Size(380, 291);
+            this.btn_HeatingTrigger.Location = new System.Drawing.Point(236, 101);
+            this.btn_HeatingTrigger.Name = "btn_HeatingTrigger";
+            this.btn_HeatingTrigger.Size = new System.Drawing.Size(145, 47);
+            this.btn_HeatingTrigger.TabIndex = 0;
+            this.btn_HeatingTrigger.Text = "HeatingTrigger";
+            this.btn_HeatingTrigger.UseVisualStyleBackColor = true;
+            this.btn_HeatingTrigger.Click += new System.EventHandler(this.btn_HeatingTrigger_Click);
             // 
-            // button1
+            // lb_USBHeating
             // 
-            this.button1.Location = new System.Drawing.Point(394, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(336, 85);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.lb_USBHeating.FormattingEnabled = true;
+            this.lb_USBHeating.ItemHeight = 12;
+            this.lb_USBHeating.Location = new System.Drawing.Point(3, 3);
+            this.lb_USBHeating.Name = "lb_USBHeating";
+            this.lb_USBHeating.Size = new System.Drawing.Size(214, 376);
+            this.lb_USBHeating.TabIndex = 1;
+            // 
+            // lbl_USBState
+            // 
+            this.lbl_USBState.AutoSize = true;
+            this.lbl_USBState.Location = new System.Drawing.Point(234, 18);
+            this.lbl_USBState.Name = "lbl_USBState";
+            this.lbl_USBState.Size = new System.Drawing.Size(39, 12);
+            this.lbl_USBState.TabIndex = 4;
+            this.lbl_USBState.Text = "label35";
+            // 
+            // instantDoCtrl1
+            // 
+            this.instantDoCtrl1._StateStream = ((Automation.BDaq.DeviceStateStreamer)(resources.GetObject("instantDoCtrl1._StateStream")));
+            // 
+            // instantAiCtrl1
+            // 
+            this.instantAiCtrl1._StateStream = ((Automation.BDaq.DeviceStateStreamer)(resources.GetObject("instantAiCtrl1._StateStream")));
+            // 
+            // timer_USB
+            // 
+            this.timer_USB.Interval = 500;
+            this.timer_USB.Tick += new System.EventHandler(this.timer_USB_Tick);
+            // 
+            // lbl_USBState2
+            // 
+            this.lbl_USBState2.AutoSize = true;
+            this.lbl_USBState2.Location = new System.Drawing.Point(234, 48);
+            this.lbl_USBState2.Name = "lbl_USBState2";
+            this.lbl_USBState2.Size = new System.Drawing.Size(39, 12);
+            this.lbl_USBState2.TabIndex = 4;
+            this.lbl_USBState2.Text = "label35";
             // 
             // Form1
             // 
@@ -799,6 +873,8 @@ namespace _50
             this.gbx_SingleAxisControl.PerformLayout();
             this.gbx_DeviceConnect.ResumeLayout(false);
             this.tp1_HlaconTest.ResumeLayout(false);
+            this.tp1_Heating.ResumeLayout(false);
+            this.tp1_Heating.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -873,6 +949,14 @@ namespace _50
         private System.Windows.Forms.TabPage tp1_HlaconTest;
         private System.Windows.Forms.Button button1;
         private HalconDotNet.HWindowControl hWindowControl1;
+        private System.Windows.Forms.TabPage tp1_Heating;
+        private System.Windows.Forms.Label lbl_USBState;
+        private System.Windows.Forms.ListBox lb_USBHeating;
+        private System.Windows.Forms.Button btn_HeatingTrigger;
+        private Automation.BDaq.InstantDoCtrl instantDoCtrl1;
+        private Automation.BDaq.InstantAiCtrl instantAiCtrl1;
+        private System.Windows.Forms.Timer timer_USB;
+        private System.Windows.Forms.Label lbl_USBState2;
     }
 }
 

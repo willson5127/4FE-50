@@ -39,6 +39,10 @@
     <Reference Include="AdvMotAPI">
       <HintPath>..\..\..\..\..\Desktop\原本的程式 - 複製\AIO\AdvMotAPI.dll</HintPath>
     </Reference>
+    <Reference Include="Automation.BDaq4, Version=4.0.0.0, Culture=neutral, PublicKeyToken=463f5928d60183a0, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Advantech\DAQNavi\Automation.BDaq\4.0.0.0\Automation.BDaq4.dll</HintPath>
+    </Reference>
     <Reference Include="halcondotnet">
       <HintPath>..\..\..\..\..\..\..\Program Files\MVTec\HALCON-12.0\bin\dotnet35\halcondotnet.dll</HintPath>
     </Reference>

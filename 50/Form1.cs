@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 using Advantech.Motion;
 using Advantech.MotionComponent;    //研華
+using Automation;              //USB-4716
 
 using HalconDotNet; //hlacon
 
@@ -24,7 +25,9 @@ namespace _50
         public Form1()
         {
             InitializeComponent();
-                        
+            //表示USB-4716是否連線成功
+            lbl_USBState.Text = instantDoCtrl1.Initialized.ToString();           //表示USB-4716是否連線成功
+
             tcl_Window00.Location = this.Location;
             tcl_Window00.Size = this.Size;
 
@@ -553,6 +556,11 @@ namespace _50
         //當按右上的叉叉時的反應或程式強制關閉時
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            //關掉加熱器
+            timer_USB.Enabled = false;
+            DO_port = 0;
+            instantDoCtrl1.Write(0, DO_port);
+
             OpenBoard();
 
             UInt16[] usAxisState = new UInt16[32];
@@ -851,6 +859,59 @@ namespace _50
             image_A = framegrabber_A.GrabImage();
             image_A.DispObj(window_A);
 
+        }
+
+        //USB-4716
+
+
+        //加熱測試鈕 關閉程式時記得關閉加熱器!
+        public const int AI_count = 16;
+        double[] AI_Data = new double[AI_count];            //類比輸入空間矩陣
+        byte DO_port = 0;                                   //數位輸入出之代號
+
+        private void btn_HeatingTrigger_Click(object sender, EventArgs e)
+        {
+            if (!timer_USB.Enabled)                         //加熱計時器啟動
+            {
+                timer_USB.Enabled = true;
+            }
+            else if (timer_USB.Enabled)                     //加熱計時器關閉並關閉加熱
+            {
+                timer_USB.Enabled = false;
+                DO_port = 0;
+                instantDoCtrl1.Write(0, DO_port);
+            }
+        }
+
+        private void timer_USB_Tick(object sender, EventArgs e)
+        {
+            if (Convert.ToDouble(AI_Data[0]) < 2.9)                     //當小於2.9V時啟動加熱器
+            {
+                DO_port = 1;                        //數位輸出腳位0號
+                instantDoCtrl1.Write(0, DO_port);
+            }
+            else if (Convert.ToDouble(AI_Data[0]) >= 2.9)               //當大於等於2.9V時關閉加熱器
+            {
+                DO_port = 0;
+                instantDoCtrl1.Write(0, DO_port);
+            }
+            //double temperature;
+            if (lb_USBHeating.Items.Count >= 15)                          //電壓檢測表寫入與限制行數
+            {
+                for (int i = 1; i < lb_USBHeating.Items.Count; i++)
+                {
+                    lb_USBHeating.Items[i - 1] = lb_USBHeating.Items[i];
+                }
+                instantAiCtrl1.Read(0, AI_count, AI_Data);
+
+                lb_USBHeating.Items[lb_USBHeating.Items.Count - 1] = AI_Data[0].ToString("0.000");
+            }
+            else                                                        //初始加入行數
+            {
+                instantAiCtrl1.Read(0, AI_count, AI_Data);
+                lb_USBHeating.Items.Add(AI_Data[0].ToString("0.000"));
+            }
+            lbl_USBState2.Text = AI_Data[0].ToString("0.000");
         }
     }
 }
