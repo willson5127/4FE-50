@@ -32,30 +32,7 @@ namespace _50
             tcl_Window00.Size = this.Size;
 
 
-            //自動輸入與找尋軸卡程式
-
-            //宣告(全域宣告在Form1.Designer.cs之末端)
-            int Result;
-
-            //程式本體
-            //掃描設備數量
-            Result = Motion.mAcm_GetAvailableDevs(CurAvailableDevs, Motion.MAX_DEVICES, ref deviceCount);
-            if (Result != (int)ErrorCode.SUCCESS)
-            {
-                MessageBox.Show("Can Not Get Available Device", "PTP", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            cbx_DeviceSelect.Items.Clear();
-            for (int i = 0; i < deviceCount; i++)
-            {
-                cbx_DeviceSelect.Items.Add(CurAvailableDevs[i].DeviceName);
-            }
-            if (deviceCount > 0)
-            {
-                cbx_DeviceSelect.SelectedIndex = 0;
-                DeviceNum = CurAvailableDevs[0].DeviceNum;
-            }
-            //結束
+            
         }
 
         void MultipleMove(double move0, double move1, double move2, double move3)
@@ -65,12 +42,15 @@ namespace _50
             {
                 //速度差補
                 double[] par_VelHigh = new double[4];
+                double[] par_VelLow = new double[4];
+                double[] par_Acc = new double[4];
+                double[] par_Dec = new double[4];
                 double x = 0, y = 0, z = 0;
                 double x_k = 0, y_k = 0, z_k = 0;
 
-                x_k = Convert.ToDouble(txt_MultipleMovePosition0.Text);
-                y_k = Convert.ToDouble(txt_MultipleMovePosition1.Text);
-                z_k = Convert.ToDouble(txt_MultipleMovePosition2.Text);
+                x_k = move0;
+                y_k = move1;
+                z_k = move2;
 
                 if (rbtn_Asolute.Checked)                             //絕對移動確認
                 {
@@ -90,12 +70,46 @@ namespace _50
                 par_VelHigh[0] = VelHigh * Math.Abs(x_k / max_distance);//照移動路徑設定X軸運行速度
                 par_VelHigh[1] = VelHigh * Math.Abs(y_k / max_distance);//照移動路徑設定Y軸運行速度
                 par_VelHigh[2] = VelHigh * Math.Abs(z_k / max_distance);//照移動路徑設定Z軸運行速度
+                par_VelHigh[3] = VelHighE;                               //照移動路徑設定E軸運行速度
 
-                for (int i = 0; i < 3; i++)
+                par_VelLow[0] = VelLow;
+                par_VelLow[1] = VelLow;
+                par_VelLow[2] = VelLow;
+                par_VelLow[3] = VelLowE;
+
+                par_Acc[0] = Acc;
+                par_Acc[1] = Acc;
+                par_Acc[2] = Acc;
+                par_Acc[3] = AccE;
+
+                par_Dec[0] = Dec;
+                par_Dec[1] = Dec;
+                par_Dec[2] = Dec;
+                par_Dec[3] = DecE;
+
+                for (int i = 0; i < 4; i++)
                 {
                     if (par_VelHigh[i] == 0)
                         par_VelHigh[i]++;
                     Result = Motion.mAcm_SetProperty(m_Axishand[i], (uint)PropertyID.PAR_AxVelHigh, ref par_VelHigh[i], (uint)Marshal.SizeOf(typeof(double)));
+                    if (Result != (uint)ErrorCode.SUCCESS)
+                    {
+                        MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    Result = Motion.mAcm_SetProperty(m_Axishand[i], (uint)PropertyID.PAR_AxVelLow, ref par_VelLow[i], (uint)Marshal.SizeOf(typeof(double)));
+                    if (Result != (uint)ErrorCode.SUCCESS)
+                    {
+                        MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    Result = Motion.mAcm_SetProperty(m_Axishand[i], (uint)PropertyID.PAR_AxAcc, ref par_Acc[i], (uint)Marshal.SizeOf(typeof(double)));
+                    if (Result != (uint)ErrorCode.SUCCESS)
+                    {
+                        MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    Result = Motion.mAcm_SetProperty(m_Axishand[i], (uint)PropertyID.PAR_AxDec, ref par_Dec[i], (uint)Marshal.SizeOf(typeof(double)));
                     if (Result != (uint)ErrorCode.SUCCESS)
                     {
                         MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -226,9 +240,6 @@ namespace _50
             for (i = 0; i < m_ulAxisCount; i++)
             {
                 //匯入所有軸並給予每一隻軸代號
-                //Open every Axis and get the each Axis Handle
-                //And Initial property for each Axis 		
-                //Open Axis 
                 Result = Motion.mAcm_AxOpen(m_DeviceHandle, (UInt16)i, ref m_Axishand[i]);
                 if (Result != (uint)ErrorCode.SUCCESS)
                 {
@@ -256,7 +267,6 @@ namespace _50
                         break;
                 }
                 //將每一軸設定理論位置到0
-                //Reset Command Counter
                 double cmdPosition = new double();
                 cmdPosition = 0;
                 Motion.mAcm_AxSetCmdPosition(m_Axishand[i], cmdPosition);
@@ -303,14 +313,26 @@ namespace _50
                 cbx_AxisSelect.Text = "";
                 tbx_AisxPosition.Clear();
                 tbx_AxisState.Clear();
+                cbx_AxisOpen0.Clear();
+                txt_PositionX.Clear();
+                txt_StateX.Clear();
+                cbx_AxisOpen1.Clear();
+                txt_PositionY.Clear();
+                txt_StateY.Clear();
+                cbx_AxisOpen2.Clear();
+                txt_PositionZ.Clear();
+                txt_StateZ.Clear();
+                cbx_AxisOpen3.Clear();
+                txt_PositionE.Clear();
+                txt_StateE.Clear();
             }
         }
 
         //啟動軸卡
         private void btn_OpenDevice_Click(object sender, EventArgs e)
         {
-            UInt32 result;
-            uint uDeviceType = 0;           //軸卡型號代號
+            //UInt32 result;
+            //uint uDeviceType = 0;           //軸卡型號代號
 
             OpenBoard();
 
@@ -331,7 +353,9 @@ namespace _50
             }*/
         }
 
-        //軸之位置與狀態觀察計時器
+    
+
+           //軸之位置與狀態觀察計時器
         private void timer1_Tick(object sender, EventArgs e)
         {
             double CurCmd = new double();
@@ -354,8 +378,7 @@ namespace _50
                         break;
                     case 1:
                         strTemp = "STA_AX_READY";
-                        btn_SetVel.Enabled = true;
-                        txt_VelHigh.Enabled = true;
+
                         break;
                     case 2:
                         strTemp = "STA_AX_STOPPING";
@@ -368,8 +391,6 @@ namespace _50
                         break;
                     case 5:
                         strTemp = "STA_AX_PTP_MOT";
-                        btn_SetVel.Enabled = false;
-                        txt_VelHigh.Enabled = false;
                         break;
                     case 6:
                         strTemp = "STA_AX_CONTI_MOT";
@@ -383,10 +404,11 @@ namespace _50
                 tbx_AxisState.Text = strTemp;
 
                 //多軸
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < m_ulAxisCount; i++)
                 {
                     Motion.mAcm_AxGetCmdPosition(m_Axishand[i], ref CurCmd);
                     Motion.mAcm_AxGetState(m_Axishand[i], ref AxState);
+                    sp[i] = AxState;
                     switch (AxState)
                     {
                         case 0:
@@ -436,6 +458,31 @@ namespace _50
                             break;
                         default:
                             break;
+                    }
+
+                    if (sp[0] == 1 && sp[1] == 1 && sp[2] == 1 && sp[3] == 1) 
+                    {
+                        btn_SetVel.Enabled = true;
+                        txt_VelHigh.Enabled = true;
+                        txt_VelLow.Enabled = true;
+                        txt_Acc.Enabled = true;
+                        txt_Dec.Enabled = true;
+                        txt_EVelHigh.Enabled = true;
+                        txt_EVelLow.Enabled = true;
+                        txt_EAcc.Enabled = true;
+                        txt_EDec.Enabled = true;
+                    }
+                    else
+                    {
+                        btn_SetVel.Enabled = false;
+                        txt_VelHigh.Enabled = false;
+                        txt_VelLow.Enabled = false;
+                        txt_Acc.Enabled = false;
+                        txt_Dec.Enabled = false;
+                        txt_EVelHigh.Enabled = false;
+                        txt_EVelLow.Enabled = false;
+                        txt_EAcc.Enabled = false;
+                        txt_EDec.Enabled = false;
                     }
 
                     /*a_E.GetState(ref Es);                           //取得E軸狀態
@@ -594,12 +641,42 @@ namespace _50
         private void btn_AxisMultipleMove_Click(object sender, EventArgs e)
         {
             double move0, move1, move2, move3;
-            move0 = Convert.ToDouble(txt_MultipleMovePosition0.Text);
-            move1 = Convert.ToDouble(txt_MultipleMovePosition1.Text);
-            move2 = Convert.ToDouble(txt_MultipleMovePosition2.Text);
-            move3 = Convert.ToDouble(txt_MultipleMovePosition3.Text);
-
-
+            try
+            {
+                move0 = Convert.ToDouble(txt_MultipleMovePosition0.Text);
+            }
+            catch
+            {
+                txt_MultipleMovePosition0.Text = "0";
+                move0 = Convert.ToDouble(txt_MultipleMovePosition0.Text);
+            }
+            try
+            {
+                move1 = Convert.ToDouble(txt_MultipleMovePosition1.Text);
+            }
+            catch
+            {
+                txt_MultipleMovePosition1.Text = "0";
+                move1 = Convert.ToDouble(txt_MultipleMovePosition1.Text);
+            }
+            try
+            {
+                move2 = Convert.ToDouble(txt_MultipleMovePosition2.Text);
+            }
+            catch
+            {
+                txt_MultipleMovePosition2.Text = "0";
+                move2 = Convert.ToDouble(txt_MultipleMovePosition2.Text);
+            }
+            try
+            {
+                move3 = Convert.ToDouble(txt_MultipleMovePosition3.Text);
+            }
+            catch
+            {
+                txt_MultipleMovePosition3.Text = "0";
+                move3 = Convert.ToDouble(txt_MultipleMovePosition3.Text);
+            }
 
             if (ckb_Reverse.Checked)
             {
@@ -633,6 +710,14 @@ namespace _50
         private void btn_SetVel_Click(object sender, EventArgs e)
         {
             VelHigh = Convert.ToDouble(txt_VelHigh.Text);
+            VelLow = Convert.ToDouble(txt_VelLow.Text);
+            Acc = Convert.ToDouble(txt_Acc.Text);
+            Dec = Convert.ToDouble(txt_Dec.Text);
+
+            VelHighE = Convert.ToDouble(txt_EVelHigh.Text);
+            VelLowE = Convert.ToDouble(txt_EVelLow.Text);
+            AccE = Convert.ToDouble(txt_EAcc.Text);
+            DecE = Convert.ToDouble(txt_EDec.Text);
         }
 
         private void rbtn_Asolute_CheckedChanged(object sender, EventArgs e)
@@ -696,131 +781,132 @@ namespace _50
 
         private void time_GcodeRead_Tick(object sender, EventArgs e)
         {
-
-            UInt32 result;                                                          //宣告讀取碼對照組
-            //以區分大小寫形式宣告Gcode讀寫規則
-            Regex Gcode = new Regex("[xyzg]-?[0-9]*.?([0-9]­*[0-9]­*[0-9]­*|[0-9]­*[0-9]­*|[0-9]­*)", RegexOptions.IgnoreCase);
-            //使用'Gcode'規則讀'dataGridView1'的程式碼到特定規則讀寫字串'm'
-            MatchCollection m = Gcode.Matches(dgv_Gcode.CurrentCell.Value.ToString());
-
-            foreach (Match n in m)
+            if (currentGcode != dgv_Gcode.RowCount - 1)
             {
-                string G = n.Value;                                 //宣告G變數
-                if (n.Value.StartsWith("G"))                        //判斷是否是X數據
+                UInt16 AxState = new UInt16();
+                UInt32 result;                                                          //宣告讀取碼對照組
+                                                                                        //以區分大小寫形式宣告Gcode讀寫規則
+                Regex Gcode = new Regex("[xyzg]-?[0-9]*.?([0-9]­*[0-9]­*[0-9]­*|[0-9]­*[0-9]­*|[0-9]­*)", RegexOptions.IgnoreCase);
+                //使用'Gcode'規則讀'dataGridView1'的程式碼到特定規則讀寫字串'm'
+                MatchCollection m = Gcode.Matches(dgv_Gcode.CurrentCell.Value.ToString());
+
+                foreach (Match n in m)
                 {
-                    G = n.Value;                                    //確定G數值
-                    G = Convert.ToString(n.Value.Remove(0, 1));     //去除數值開頭取距離
-                    txt_G.Text = G.ToString();                   //G值輸入到文字欄
-                    //  textBox4.Text = Regex.Replace(X, "^[-+]?/d+(/./d+)?$", " ");
-                }
-                string X = n.Value;                                 //宣告X變數
-                if (n.Value.StartsWith("X"))                        //判斷是否是X數據
-                {
-                    X = n.Value;                                    //確定X數值
-                    X = Convert.ToString(n.Value.Remove(0, 1));     //去除數值開頭取距離
-                    txt_X.Text = X.ToString();                   //X值輸入到文字欄
-                    //  textBox8.Text = Regex.Replace(X, "^[-+]?/d+(/./d+)?$", " ");
-                }
-                string Y = n.Value;                                 //宣告Y變數
-                if (n.Value.StartsWith("Y"))                        //判斷是否是Y數據
-                {
-                    Y = n.Value;                                    //確定Y數值
-                    Y = Convert.ToString(n.Value.Remove(0, 1));     //去除數值開頭取距離
-                    // textBox9.Text = Regex.Replace(Y, "[^0-9]*\\.[^0-9]­*\\[^0-9]", "");
-                    txt_Y.Text = Y.ToString();                   //Y值輸入到文字欄
-                }
-                string Z = n.Value;                                 //宣告Z變數
-                if (n.Value.StartsWith("Z"))                        //判斷是否是Z數據
-                {
-                    Z = n.Value;                                    //確定Z數值
-                    Z = Convert.ToString(n.Value.Remove(0, 1));     //去除數值開頭取距離
-                    // textBox10.Text = Regex.Replace(Z, "[^0-9]*\\.[^0-9]­*\\[^0-9]", "");
-                    txt_Z.Text = Z.ToString();                  //Z值輸入到文字欄
-                }
-            }
-
-
-            //move3 = Convert.ToDouble(txt_E.Text);
-
-            /*if (txt_G.Text == "1")
-                result = axis4.MoveVel(1);               //啟動E軸
-            else if (txt_G.Text == "0")
-            {
-                result = axis4.StopDec();                //E軸停止
-            }*/
-
-            if (m_bInit)
-            {
-                if (txt_X.Text != "" && txt_Y.Text != "" && txt_Z.Text != "")   //判定有無效
-                {
-
-                    //輸入位置
-                    double move0, move1, move2, move3;
-                    move0 = Convert.ToDouble(txt_X.Text);
-                    move1 = Convert.ToDouble(txt_Y.Text);
-                    move2 = Convert.ToDouble(txt_Z.Text);
-
-                    rbtn_Relatively.Checked = false;
-                    rbtn_Asolute.Checked = true;
-                    move3 = 0;
-
-                    //移動軸
-                    MultipleMove(move0, move1, move2, move3);
-
-                    //判斷三軸是否到位
-                    UInt16 Xs = 5, Ys = 5, Zs = 5;
-                    do
+                    string G;                              //宣告G變數
+                    if (n.Value.StartsWith("G"))                        //判斷是否是G數據
                     {
-                        for (int i = 0; i < 4; i++)
-                        {
-                            UInt16 AxState = new UInt16();
-                            result = Motion.mAcm_AxGetState(m_Axishand[i], ref AxState);
-                            switch (i)
-                            {
-                                case 0:
-                                    Xs = AxState;
-                                    break;
-                                case 1:
-                                    Ys = AxState;
-                                    break;
-                                case 2:
-                                    Zs = AxState;
-                                    break;
-                                default:
-                                    break;
-                            }
-                            if (result != (uint)ErrorCode.SUCCESS)      //錯誤碼判斷
-                            {
-                                MessageBox.Show("Error Code[0x" + Convert.ToString(result, 16) + "]:" + (ErrorCode)result, "PTP", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-                                return;
-                            }
-                        }
-                    } while (Xs == 5 || Ys == 5 || Zs == 5);        //當三軸都正確跳出迴圈                                     
+                        G = n.Value;                                    //確定G數值
+                        G = Convert.ToString(n.Value.Remove(0, 1));     //去除數值開頭取距離
+                        txt_G.Text = G.ToString();                   //G值輸入到文字欄
+                                                                     //  textBox4.Text = Regex.Replace(X, "^[-+]?/d+(/./d+)?$", " ");
+                    }
+                    string X;                                //宣告X變數
+                    if (n.Value.StartsWith("X"))                        //判斷是否是X數據
+                    {
+                        X = n.Value;                                    //確定X數值
+                        X = Convert.ToString(n.Value.Remove(0, 1));     //去除數值開頭取距離
+                        txt_X.Text = X.ToString();                   //X值輸入到文字欄
+                                                                     //  textBox8.Text = Regex.Replace(X, "^[-+]?/d+(/./d+)?$", " ");
+                    }
+                    string Y;                               //宣告Y變數
+                    if (n.Value.StartsWith("Y"))                        //判斷是否是Y數據
+                    {
+                        Y = n.Value;                                    //確定Y數值
+                        Y = Convert.ToString(n.Value.Remove(0, 1));     //去除數值開頭取距離
+                                                                        // textBox9.Text = Regex.Replace(Y, "[^0-9]*\\.[^0-9]­*\\[^0-9]", "");
+                        txt_Y.Text = Y.ToString();                   //Y值輸入到文字欄
+                    }
+                    string Z;                                //宣告Z變數
+                    if (n.Value.StartsWith("Z"))                        //判斷是否是Z數據
+                    {
+                        Z = n.Value;                                    //確定Z數值
+                        Z = Convert.ToString(n.Value.Remove(0, 1));     //去除數值開頭取距離
+                                                                        // textBox10.Text = Regex.Replace(Z, "[^0-9]*\\.[^0-9]­*\\[^0-9]", "");
+                        txt_Z.Text = Z.ToString();                  //Z值輸入到文字欄
+                    }
                 }
 
-                //Gcode最後一行判定
+
+                //move3 = Convert.ToDouble(txt_E.Text);
+
+                /*if (txt_G.Text == "1")
+                    result = axis4.MoveVel(1);               //啟動E軸
+                else if (txt_G.Text == "0")
+                {
+                    result = axis4.StopDec();                //E軸停止
+                }*/
+
+                if (m_bInit)
+                {
+                    if (txt_X.Text != "" && txt_Y.Text != "" && txt_Z.Text != "")   //判定有無效
+                    {
+
+                        //輸入位置
+                        double move0, move1, move2, move3;
+                        move0 = Convert.ToDouble(txt_X.Text);
+                        move1 = Convert.ToDouble(txt_Y.Text);
+                        move2 = Convert.ToDouble(txt_Z.Text);
+
+                        rbtn_Relatively.Checked = false;
+                        rbtn_Asolute.Checked = true;
+                        move3 = 0;
+
+                        for (int i = 0; i < m_ulAxisCount; i++)
+                        {
+                            Motion.mAcm_AxGetState(m_Axishand[i], ref AxState);
+                            sp[i] = AxState;
+                        }
+                        if (!(sp[0] == 5 || sp[1] == 5 || sp[2] == 5))
+                        {
+                            if (currentGcode != dgv_Gcode.RowCount - 1)
+                            {
+                                //移動軸
+                                MultipleMove(move0, move1, move2, move3);
+                                currentGcode++;
+                                dgv_Gcode.CurrentCell = dgv_Gcode.Rows[currentGcode].Cells[0];         //程式碼表選取該應選的行號
+                            }
+
+                        }
+                    }
+                }
+                else
+                {
+                    time_GcodeRead.Enabled = false;         //Gcode計時器關閉
+                }
+
+                /*//Gcode最後一行判定
                 if (currentGcode != dgv_Gcode.RowCount - 1)
                 {
                     currentGcode++;
+                    dgv_Gcode.CurrentCell = dgv_Gcode.Rows[currentGcode].Cells[0];         //程式碼表選取該應選的行號
+                    string str = dgv_Gcode.CurrentCell.Value.ToString();                   //取得該行號之程式碼
+
+                    //G1判斷!!
+                    bool skip = str.StartsWith("G1 ");              //宣告判斷布林
+                    if (skip == false)                              //判斷是否G1開頭
+                    {
+                        dgv_Gcode.CurrentCell = dgv_Gcode.Rows[currentGcode + 1].Cells[0];               //跳行
+                    }
+
                     // serialPort1.Write("a");
-                    time_GcodeSkip.Enabled = true;          //跳行計時器啟動
+                    //time_GcodeSkip.Enabled = true;          //跳行計時器啟動
                 }
                 else
                 {
                     time_GcodeSkip.Enabled = false;         //跳行計時器關閉
                     time_GcodeRead.Enabled = false;         //Gcode計時器關閉
-                                                            /*timer_USB.Enabled = false;      //加熱器停止
+                                                            timer_USB.Enabled = false;      //加熱器停止
                                                             DO_port = 0;                    //加熱器停止
                                                             instantDoCtrl1.Write(0, DO_port);//加熱器停止
-                                                            axis4.StopDec();                //E軸停止*/
-                    MultipleMove(0, 0, 10000, 0);           //相對上升Z 10000
-                }
+                                                            axis4.StopDec();                //E軸停止
+                                                            //MultipleMove(0, 0, 10000, 0);           //相對上升Z 10000
+                }*/
             }
         }
 
         private void time_GcodeSkip_Tick(object sender, EventArgs e)
         {
-            if (currentGcode != dgv_Gcode.RowCount - 1)                  //最後一行判定
+            /*if (currentGcode != dgv_Gcode.RowCount - 1)                  //最後一行判定
             {
                 dgv_Gcode.CurrentCell = dgv_Gcode.Rows[currentGcode].Cells[0];         //程式碼表選取該應選的行號
                 string str = dgv_Gcode.CurrentCell.Value.ToString();                   //取得該行號之程式碼
@@ -831,7 +917,7 @@ namespace _50
                 {
                     dgv_Gcode.CurrentCell = dgv_Gcode.Rows[currentGcode + 1].Cells[0];               //跳行
                 }
-            }
+            }*/
         }
 
 
@@ -912,6 +998,69 @@ namespace _50
                 lb_USBHeating.Items.Add(AI_Data[0].ToString("0.000"));
             }
             lbl_USBState2.Text = AI_Data[0].ToString("0.000");
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            //自動輸入與找尋軸卡程式
+
+            //宣告(全域宣告在Form1.Designer.cs之末端)
+            int Result;
+
+            //程式本體
+            //掃描設備數量
+            Result = Motion.mAcm_GetAvailableDevs(CurAvailableDevs, Motion.MAX_DEVICES, ref deviceCount);
+            if (Result != (int)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Can Not Get Available Device", "PTP", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            cbx_DeviceSelect.Items.Clear();
+            for (int i = 0; i < deviceCount; i++)
+            {
+                cbx_DeviceSelect.Items.Add(CurAvailableDevs[i].DeviceName);
+            }
+            if (deviceCount > 0)
+            {
+                cbx_DeviceSelect.SelectedIndex = 0;
+                DeviceNum = CurAvailableDevs[0].DeviceNum;
+            }
+            //結束
+        }
+
+        private void btn_AddAxes_Click(object sender, EventArgs e)
+        {
+            uint Result;
+            uint AxesInfoInGp = new uint();
+            uint buffLen;
+            if (m_bInit != true)
+            {
+                return;
+            }
+            Result = Motion.mAcm_GpAddAxis(ref m_GpHand, m_Axishand[cbx_AxisSelect.SelectedIndex]);
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Add Axis To Group Failed", "Line", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            else//add axis success
+            {
+                AxCountInGp++;
+                listBoxAxesInGp.Items.Add(cbx_AxisSelect.Items[cbx_AxisSelect.SelectedIndex]);
+                buffLen = 4;
+                Result = Motion.mAcm_GetProperty(m_GpHand, (uint)PropertyID.CFG_GpAxesInGroup, ref AxesInfoInGp, ref buffLen);
+                if (Result == (uint)ErrorCode.SUCCESS)
+                {
+                    for (int i = 0; i < 32; i++)
+                    {
+                        if ((AxesInfoInGp & (0x1 << i)) > 0)
+                        {
+                            textBox1.Text = String.Format("{0:d}", i);
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 }

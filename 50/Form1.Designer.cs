@@ -30,10 +30,20 @@ namespace _50
         DEV_LIST[] CurAvailableDevs = new DEV_LIST[Motion.MAX_DEVICES];
 
         IntPtr m_DeviceHandle = IntPtr.Zero;
+        IntPtr m_GpHand = IntPtr.Zero;
         IntPtr[] m_Axishand = new IntPtr[32];
 
+        ushort[] sp = new ushort[4] ;
         double VelHigh = 1000;
+        double VelLow = 0;
+        double Acc = 50;
+        double Dec = 50;
+        double VelHighE = 50;
+        double VelLowE = 0;
+        double AccE = 5;
+        double DecE = 5;
         uint deviceCount = 0;
+        uint AxCountInGp = 0;
         uint DeviceNum = 0;
         uint BoardID = 0;       //E軸卡ID
         uint m_ulAxisCount = 0;
@@ -65,8 +75,25 @@ namespace _50
             this.btn_OpenFile = new System.Windows.Forms.Button();
             this.dgv_Gcode = new System.Windows.Forms.DataGridView();
             this.gbx_VelocitySet = new System.Windows.Forms.GroupBox();
-            this.txt_VelHigh = new System.Windows.Forms.TextBox();
+            this.txt_Dec = new System.Windows.Forms.TextBox();
+            this.txt_EDec = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.txt_Acc = new System.Windows.Forms.TextBox();
+            this.txt_EAcc = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.btn_SetVel = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label38 = new System.Windows.Forms.Label();
+            this.txt_VelLow = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.txt_EVelLow = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label37 = new System.Windows.Forms.Label();
+            this.txt_VelHigh = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.txt_EVelHigh = new System.Windows.Forms.TextBox();
+            this.label36 = new System.Windows.Forms.Label();
             this.gbx_MultipleAxisControl = new System.Windows.Forms.GroupBox();
             this.ckb_Reverse = new System.Windows.Forms.CheckBox();
             this.lbl_CtrlE = new System.Windows.Forms.Label();
@@ -104,6 +131,7 @@ namespace _50
             this.tbx_AisxPosition = new System.Windows.Forms.TextBox();
             this.lbl_AxisState = new System.Windows.Forms.Label();
             this.gbx_SingleAxisControl = new System.Windows.Forms.GroupBox();
+            this.btn_AddAxes = new System.Windows.Forms.Button();
             this.btn_AxisStop = new System.Windows.Forms.Button();
             this.tbx_MovePosition = new System.Windows.Forms.TextBox();
             this.btn_AxisMove = new System.Windows.Forms.Button();
@@ -114,6 +142,11 @@ namespace _50
             this.btn_CloseDevice = new System.Windows.Forms.Button();
             this.btn_OpenDevice = new System.Windows.Forms.Button();
             this.cbx_DeviceSelect = new System.Windows.Forms.ComboBox();
+            this.tp1_Heating = new System.Windows.Forms.TabPage();
+            this.lbl_USBState2 = new System.Windows.Forms.Label();
+            this.lbl_USBState = new System.Windows.Forms.Label();
+            this.lb_USBHeating = new System.Windows.Forms.ListBox();
+            this.btn_HeatingTrigger = new System.Windows.Forms.Button();
             this.tp1_HlaconTest = new System.Windows.Forms.TabPage();
             this.button1 = new System.Windows.Forms.Button();
             this.hWindowControl1 = new HalconDotNet.HWindowControl();
@@ -122,14 +155,11 @@ namespace _50
             this.ofd_Gcode = new System.Windows.Forms.OpenFileDialog();
             this.time_GcodeRead = new System.Windows.Forms.Timer(this.components);
             this.time_GcodeSkip = new System.Windows.Forms.Timer(this.components);
-            this.tp1_Heating = new System.Windows.Forms.TabPage();
-            this.btn_HeatingTrigger = new System.Windows.Forms.Button();
-            this.lb_USBHeating = new System.Windows.Forms.ListBox();
-            this.lbl_USBState = new System.Windows.Forms.Label();
             this.instantDoCtrl1 = new Automation.BDaq.InstantDoCtrl(this.components);
             this.instantAiCtrl1 = new Automation.BDaq.InstantAiCtrl(this.components);
             this.timer_USB = new System.Windows.Forms.Timer(this.components);
-            this.lbl_USBState2 = new System.Windows.Forms.Label();
+            this.listBoxAxesInGp = new System.Windows.Forms.ListBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.tcl_Window00.SuspendLayout();
             this.tp1_Test.SuspendLayout();
             this.gbx_Gcode.SuspendLayout();
@@ -141,8 +171,8 @@ namespace _50
             this.gbx_AxisState.SuspendLayout();
             this.gbx_SingleAxisControl.SuspendLayout();
             this.gbx_DeviceConnect.SuspendLayout();
-            this.tp1_HlaconTest.SuspendLayout();
             this.tp1_Heating.SuspendLayout();
+            this.tp1_HlaconTest.SuspendLayout();
             this.SuspendLayout();
             // 
             // tcl_Window00
@@ -158,6 +188,7 @@ namespace _50
             // 
             // tp1_Test
             // 
+            this.tp1_Test.Controls.Add(this.listBoxAxesInGp);
             this.tp1_Test.Controls.Add(this.gbx_Gcode);
             this.tp1_Test.Controls.Add(this.gbx_VelocitySet);
             this.tp1_Test.Controls.Add(this.gbx_MultipleAxisControl);
@@ -248,32 +279,197 @@ namespace _50
             // 
             // gbx_VelocitySet
             // 
-            this.gbx_VelocitySet.Controls.Add(this.txt_VelHigh);
+            this.gbx_VelocitySet.Controls.Add(this.txt_Dec);
+            this.gbx_VelocitySet.Controls.Add(this.txt_EDec);
+            this.gbx_VelocitySet.Controls.Add(this.label1);
+            this.gbx_VelocitySet.Controls.Add(this.txt_Acc);
+            this.gbx_VelocitySet.Controls.Add(this.txt_EAcc);
+            this.gbx_VelocitySet.Controls.Add(this.label2);
             this.gbx_VelocitySet.Controls.Add(this.btn_SetVel);
+            this.gbx_VelocitySet.Controls.Add(this.label6);
+            this.gbx_VelocitySet.Controls.Add(this.label38);
+            this.gbx_VelocitySet.Controls.Add(this.txt_VelLow);
+            this.gbx_VelocitySet.Controls.Add(this.label5);
+            this.gbx_VelocitySet.Controls.Add(this.txt_EVelLow);
+            this.gbx_VelocitySet.Controls.Add(this.label4);
+            this.gbx_VelocitySet.Controls.Add(this.label37);
+            this.gbx_VelocitySet.Controls.Add(this.txt_VelHigh);
+            this.gbx_VelocitySet.Controls.Add(this.label9);
+            this.gbx_VelocitySet.Controls.Add(this.label3);
+            this.gbx_VelocitySet.Controls.Add(this.txt_EVelHigh);
+            this.gbx_VelocitySet.Controls.Add(this.label36);
             this.gbx_VelocitySet.Location = new System.Drawing.Point(444, 109);
             this.gbx_VelocitySet.Name = "gbx_VelocitySet";
-            this.gbx_VelocitySet.Size = new System.Drawing.Size(224, 121);
+            this.gbx_VelocitySet.Size = new System.Drawing.Size(224, 200);
             this.gbx_VelocitySet.TabIndex = 6;
             this.gbx_VelocitySet.TabStop = false;
             this.gbx_VelocitySet.Text = "VelocitySet";
             // 
-            // txt_VelHigh
+            // txt_Dec
             // 
-            this.txt_VelHigh.Location = new System.Drawing.Point(6, 37);
-            this.txt_VelHigh.Name = "txt_VelHigh";
-            this.txt_VelHigh.Size = new System.Drawing.Size(203, 22);
-            this.txt_VelHigh.TabIndex = 3;
-            this.txt_VelHigh.Text = "10000";
+            this.txt_Dec.Location = new System.Drawing.Point(145, 63);
+            this.txt_Dec.Name = "txt_Dec";
+            this.txt_Dec.Size = new System.Drawing.Size(53, 22);
+            this.txt_Dec.TabIndex = 33;
+            this.txt_Dec.Text = "180000";
+            // 
+            // txt_EDec
+            // 
+            this.txt_EDec.Location = new System.Drawing.Point(145, 131);
+            this.txt_EDec.Name = "txt_EDec";
+            this.txt_EDec.Size = new System.Drawing.Size(53, 22);
+            this.txt_EDec.TabIndex = 33;
+            this.txt_EDec.Text = "500";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 88);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(12, 12);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "E";
+            // 
+            // txt_Acc
+            // 
+            this.txt_Acc.Location = new System.Drawing.Point(48, 63);
+            this.txt_Acc.Name = "txt_Acc";
+            this.txt_Acc.Size = new System.Drawing.Size(57, 22);
+            this.txt_Acc.TabIndex = 32;
+            this.txt_Acc.Text = "160000";
+            // 
+            // txt_EAcc
+            // 
+            this.txt_EAcc.Location = new System.Drawing.Point(48, 131);
+            this.txt_EAcc.Name = "txt_EAcc";
+            this.txt_EAcc.Size = new System.Drawing.Size(57, 22);
+            this.txt_EAcc.TabIndex = 32;
+            this.txt_EAcc.Text = "500";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 21);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(28, 12);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "XYZ";
             // 
             // btn_SetVel
             // 
-            this.btn_SetVel.Location = new System.Drawing.Point(6, 82);
+            this.btn_SetVel.Location = new System.Drawing.Point(6, 160);
             this.btn_SetVel.Name = "btn_SetVel";
             this.btn_SetVel.Size = new System.Drawing.Size(203, 32);
             this.btn_SetVel.TabIndex = 4;
             this.btn_SetVel.Text = "SET";
             this.btn_SetVel.UseVisualStyleBackColor = true;
             this.btn_SetVel.Click += new System.EventHandler(this.btn_SetVel_Click);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(110, 66);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(26, 12);
+            this.label6.TabIndex = 31;
+            this.label6.Text = "Dec:";
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(110, 134);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(26, 12);
+            this.label38.TabIndex = 31;
+            this.label38.Text = "Dec:";
+            // 
+            // txt_VelLow
+            // 
+            this.txt_VelLow.Location = new System.Drawing.Point(145, 38);
+            this.txt_VelLow.Name = "txt_VelLow";
+            this.txt_VelLow.Size = new System.Drawing.Size(53, 22);
+            this.txt_VelLow.TabIndex = 29;
+            this.txt_VelLow.Text = "1000";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(14, 66);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(26, 12);
+            this.label5.TabIndex = 30;
+            this.label5.Text = "Acc:";
+            // 
+            // txt_EVelLow
+            // 
+            this.txt_EVelLow.Location = new System.Drawing.Point(145, 106);
+            this.txt_EVelLow.Name = "txt_EVelLow";
+            this.txt_EVelLow.Size = new System.Drawing.Size(53, 22);
+            this.txt_EVelLow.TabIndex = 29;
+            this.txt_EVelLow.Text = "500";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("新細明體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.label4.Location = new System.Drawing.Point(6, 43);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(32, 12);
+            this.label4.TabIndex = 26;
+            this.label4.Text = "VelH:";
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(14, 134);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(26, 12);
+            this.label37.TabIndex = 30;
+            this.label37.Text = "Acc:";
+            // 
+            // txt_VelHigh
+            // 
+            this.txt_VelHigh.Location = new System.Drawing.Point(48, 38);
+            this.txt_VelHigh.Name = "txt_VelHigh";
+            this.txt_VelHigh.Size = new System.Drawing.Size(57, 22);
+            this.txt_VelHigh.TabIndex = 27;
+            this.txt_VelHigh.Text = "18000";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("新細明體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.label9.Location = new System.Drawing.Point(6, 111);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(32, 12);
+            this.label9.TabIndex = 26;
+            this.label9.Text = "VelH:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(110, 43);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(31, 12);
+            this.label3.TabIndex = 28;
+            this.label3.Text = "VelL:";
+            // 
+            // txt_EVelHigh
+            // 
+            this.txt_EVelHigh.Location = new System.Drawing.Point(48, 106);
+            this.txt_EVelHigh.Name = "txt_EVelHigh";
+            this.txt_EVelHigh.Size = new System.Drawing.Size(57, 22);
+            this.txt_EVelHigh.TabIndex = 27;
+            this.txt_EVelHigh.Text = "500";
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(110, 111);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(31, 12);
+            this.label36.TabIndex = 28;
+            this.label36.Text = "VelL:";
             // 
             // gbx_MultipleAxisControl
             // 
@@ -621,6 +817,8 @@ namespace _50
             // 
             // gbx_SingleAxisControl
             // 
+            this.gbx_SingleAxisControl.Controls.Add(this.textBox1);
+            this.gbx_SingleAxisControl.Controls.Add(this.btn_AddAxes);
             this.gbx_SingleAxisControl.Controls.Add(this.btn_AxisStop);
             this.gbx_SingleAxisControl.Controls.Add(this.tbx_MovePosition);
             this.gbx_SingleAxisControl.Controls.Add(this.btn_AxisMove);
@@ -631,6 +829,16 @@ namespace _50
             this.gbx_SingleAxisControl.TabIndex = 2;
             this.gbx_SingleAxisControl.TabStop = false;
             this.gbx_SingleAxisControl.Text = "SingleAxisControl";
+            // 
+            // btn_AddAxes
+            // 
+            this.btn_AddAxes.Location = new System.Drawing.Point(6, 71);
+            this.btn_AddAxes.Name = "btn_AddAxes";
+            this.btn_AddAxes.Size = new System.Drawing.Size(75, 23);
+            this.btn_AddAxes.TabIndex = 6;
+            this.btn_AddAxes.Text = "Add Axis";
+            this.btn_AddAxes.UseVisualStyleBackColor = true;
+            this.btn_AddAxes.Click += new System.EventHandler(this.btn_AddAxes_Click);
             // 
             // btn_AxisStop
             // 
@@ -730,6 +938,56 @@ namespace _50
             this.cbx_DeviceSelect.Size = new System.Drawing.Size(121, 20);
             this.cbx_DeviceSelect.TabIndex = 0;
             // 
+            // tp1_Heating
+            // 
+            this.tp1_Heating.Controls.Add(this.lbl_USBState2);
+            this.tp1_Heating.Controls.Add(this.lbl_USBState);
+            this.tp1_Heating.Controls.Add(this.lb_USBHeating);
+            this.tp1_Heating.Controls.Add(this.btn_HeatingTrigger);
+            this.tp1_Heating.Location = new System.Drawing.Point(4, 22);
+            this.tp1_Heating.Name = "tp1_Heating";
+            this.tp1_Heating.Size = new System.Drawing.Size(879, 689);
+            this.tp1_Heating.TabIndex = 2;
+            this.tp1_Heating.Text = "Heating";
+            this.tp1_Heating.UseVisualStyleBackColor = true;
+            // 
+            // lbl_USBState2
+            // 
+            this.lbl_USBState2.AutoSize = true;
+            this.lbl_USBState2.Location = new System.Drawing.Point(234, 48);
+            this.lbl_USBState2.Name = "lbl_USBState2";
+            this.lbl_USBState2.Size = new System.Drawing.Size(39, 12);
+            this.lbl_USBState2.TabIndex = 4;
+            this.lbl_USBState2.Text = "label35";
+            // 
+            // lbl_USBState
+            // 
+            this.lbl_USBState.AutoSize = true;
+            this.lbl_USBState.Location = new System.Drawing.Point(234, 18);
+            this.lbl_USBState.Name = "lbl_USBState";
+            this.lbl_USBState.Size = new System.Drawing.Size(39, 12);
+            this.lbl_USBState.TabIndex = 4;
+            this.lbl_USBState.Text = "label35";
+            // 
+            // lb_USBHeating
+            // 
+            this.lb_USBHeating.FormattingEnabled = true;
+            this.lb_USBHeating.ItemHeight = 12;
+            this.lb_USBHeating.Location = new System.Drawing.Point(3, 3);
+            this.lb_USBHeating.Name = "lb_USBHeating";
+            this.lb_USBHeating.Size = new System.Drawing.Size(214, 376);
+            this.lb_USBHeating.TabIndex = 1;
+            // 
+            // btn_HeatingTrigger
+            // 
+            this.btn_HeatingTrigger.Location = new System.Drawing.Point(236, 101);
+            this.btn_HeatingTrigger.Name = "btn_HeatingTrigger";
+            this.btn_HeatingTrigger.Size = new System.Drawing.Size(145, 47);
+            this.btn_HeatingTrigger.TabIndex = 0;
+            this.btn_HeatingTrigger.Text = "HeatingTrigger";
+            this.btn_HeatingTrigger.UseVisualStyleBackColor = true;
+            this.btn_HeatingTrigger.Click += new System.EventHandler(this.btn_HeatingTrigger_Click);
+            // 
             // tp1_HlaconTest
             // 
             this.tp1_HlaconTest.Controls.Add(this.button1);
@@ -782,47 +1040,6 @@ namespace _50
             // 
             this.time_GcodeSkip.Tick += new System.EventHandler(this.time_GcodeSkip_Tick);
             // 
-            // tp1_Heating
-            // 
-            this.tp1_Heating.Controls.Add(this.lbl_USBState2);
-            this.tp1_Heating.Controls.Add(this.lbl_USBState);
-            this.tp1_Heating.Controls.Add(this.lb_USBHeating);
-            this.tp1_Heating.Controls.Add(this.btn_HeatingTrigger);
-            this.tp1_Heating.Location = new System.Drawing.Point(4, 22);
-            this.tp1_Heating.Name = "tp1_Heating";
-            this.tp1_Heating.Size = new System.Drawing.Size(879, 689);
-            this.tp1_Heating.TabIndex = 2;
-            this.tp1_Heating.Text = "Heating";
-            this.tp1_Heating.UseVisualStyleBackColor = true;
-            // 
-            // btn_HeatingTrigger
-            // 
-            this.btn_HeatingTrigger.Location = new System.Drawing.Point(236, 101);
-            this.btn_HeatingTrigger.Name = "btn_HeatingTrigger";
-            this.btn_HeatingTrigger.Size = new System.Drawing.Size(145, 47);
-            this.btn_HeatingTrigger.TabIndex = 0;
-            this.btn_HeatingTrigger.Text = "HeatingTrigger";
-            this.btn_HeatingTrigger.UseVisualStyleBackColor = true;
-            this.btn_HeatingTrigger.Click += new System.EventHandler(this.btn_HeatingTrigger_Click);
-            // 
-            // lb_USBHeating
-            // 
-            this.lb_USBHeating.FormattingEnabled = true;
-            this.lb_USBHeating.ItemHeight = 12;
-            this.lb_USBHeating.Location = new System.Drawing.Point(3, 3);
-            this.lb_USBHeating.Name = "lb_USBHeating";
-            this.lb_USBHeating.Size = new System.Drawing.Size(214, 376);
-            this.lb_USBHeating.TabIndex = 1;
-            // 
-            // lbl_USBState
-            // 
-            this.lbl_USBState.AutoSize = true;
-            this.lbl_USBState.Location = new System.Drawing.Point(234, 18);
-            this.lbl_USBState.Name = "lbl_USBState";
-            this.lbl_USBState.Size = new System.Drawing.Size(39, 12);
-            this.lbl_USBState.TabIndex = 4;
-            this.lbl_USBState.Text = "label35";
-            // 
             // instantDoCtrl1
             // 
             this.instantDoCtrl1._StateStream = ((Automation.BDaq.DeviceStateStreamer)(resources.GetObject("instantDoCtrl1._StateStream")));
@@ -836,14 +1053,22 @@ namespace _50
             this.timer_USB.Interval = 500;
             this.timer_USB.Tick += new System.EventHandler(this.timer_USB_Tick);
             // 
-            // lbl_USBState2
+            // listBoxAxesInGp
             // 
-            this.lbl_USBState2.AutoSize = true;
-            this.lbl_USBState2.Location = new System.Drawing.Point(234, 48);
-            this.lbl_USBState2.Name = "lbl_USBState2";
-            this.lbl_USBState2.Size = new System.Drawing.Size(39, 12);
-            this.lbl_USBState2.TabIndex = 4;
-            this.lbl_USBState2.Text = "label35";
+            this.listBoxAxesInGp.BackColor = System.Drawing.SystemColors.Control;
+            this.listBoxAxesInGp.FormattingEnabled = true;
+            this.listBoxAxesInGp.ItemHeight = 12;
+            this.listBoxAxesInGp.Location = new System.Drawing.Point(674, 118);
+            this.listBoxAxesInGp.Name = "listBoxAxesInGp";
+            this.listBoxAxesInGp.Size = new System.Drawing.Size(88, 76);
+            this.listBoxAxesInGp.TabIndex = 31;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(87, 71);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(36, 22);
+            this.textBox1.TabIndex = 7;
             // 
             // Form1
             // 
@@ -854,6 +1079,7 @@ namespace _50
             this.Name = "Form1";
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.tcl_Window00.ResumeLayout(false);
             this.tp1_Test.ResumeLayout(false);
             this.gbx_Gcode.ResumeLayout(false);
@@ -872,9 +1098,9 @@ namespace _50
             this.gbx_SingleAxisControl.ResumeLayout(false);
             this.gbx_SingleAxisControl.PerformLayout();
             this.gbx_DeviceConnect.ResumeLayout(false);
-            this.tp1_HlaconTest.ResumeLayout(false);
             this.tp1_Heating.ResumeLayout(false);
             this.tp1_Heating.PerformLayout();
+            this.tp1_HlaconTest.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -933,7 +1159,6 @@ namespace _50
         private System.Windows.Forms.Label lbl_AxisState;
         private System.Windows.Forms.CheckBox ckb_Reverse;
         private System.Windows.Forms.GroupBox gbx_VelocitySet;
-        private System.Windows.Forms.TextBox txt_VelHigh;
         private System.Windows.Forms.Button btn_SetVel;
         private System.Windows.Forms.GroupBox gbx_Gcode;
         private System.Windows.Forms.DataGridView dgv_Gcode;
@@ -957,6 +1182,27 @@ namespace _50
         private Automation.BDaq.InstantAiCtrl instantAiCtrl1;
         private System.Windows.Forms.Timer timer_USB;
         private System.Windows.Forms.Label lbl_USBState2;
+        private System.Windows.Forms.TextBox txt_Dec;
+        private System.Windows.Forms.TextBox txt_EDec;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txt_Acc;
+        private System.Windows.Forms.TextBox txt_EAcc;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label38;
+        private System.Windows.Forms.TextBox txt_VelLow;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox txt_EVelLow;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label37;
+        private System.Windows.Forms.TextBox txt_VelHigh;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox txt_EVelHigh;
+        private System.Windows.Forms.Label label36;
+        private System.Windows.Forms.Button btn_AddAxes;
+        private System.Windows.Forms.ListBox listBoxAxesInGp;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 
