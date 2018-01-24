@@ -665,7 +665,7 @@ namespace _50
                             break;
                     }
 
-                    if (sp[0] == 1 && sp[1] == 1 && sp[2] == 1 && sp[3] == 1) 
+                    if (sp[0] == 1 && sp[1] == 1 && sp[2] == 1 && sp[3] == 1)
                     {
                         btn_SetVel.Enabled = true;
                         txt_VelHigh.Enabled = true;
@@ -689,6 +689,94 @@ namespace _50
                         txt_EAcc.Enabled = false;
                         txt_EDec.Enabled = false;
                     }
+
+                    UInt32 Result;
+                    UInt32 IOStatus = new UInt32();
+                    Result = Motion.mAcm_AxGetMotionIO(m_Axishand[i], ref IOStatus);
+                    if (Result == (uint)ErrorCode.SUCCESS)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                if ((IOStatus & 0x200) > 0)//EZ 
+                                {
+                                    pbx_EZX.BackColor = Color.Red;
+                                }
+                                else
+                                {
+                                    pbx_EZX.BackColor = Color.Gray;
+                                }
+
+                                if ((IOStatus & 0x4) > 0)//+EL
+                                {
+                                    pbx_PosHELX.BackColor = Color.Red;
+                                }
+                                else
+                                {
+                                    pbx_PosHELX.BackColor = Color.Gray;
+                                }
+
+                                if ((IOStatus & 0x8) > 0)//-EL
+                                {
+                                    pbx_NegHELX.BackColor = Color.Red;
+                                }
+                                else
+                                {
+                                    pbx_NegHELX.BackColor = Color.Gray;
+                                }
+                                break;
+                            case 1:
+                                if ((IOStatus & 0x200) > 0)//EZ 
+                                {
+                                    pbx_EZY.BackColor = Color.Red;
+                                }
+                                else
+                                {
+                                    pbx_EZY.BackColor = Color.Gray;
+                                }
+
+                                if ((IOStatus & 0x4) > 0)//+EL
+                                {
+                                    pbx_PosHELY.BackColor = Color.Red;
+                                }
+                                else
+                                {
+                                    pbx_PosHELY.BackColor = Color.Gray;
+                                }
+
+                                if ((IOStatus & 0x8) > 0)//-EL
+                                {
+                                    pbx_NegHELY.BackColor = Color.Red;
+                                }
+                                else
+                                {
+                                    pbx_NegHELY.BackColor = Color.Gray;
+                                }
+                                break;
+                            case 2:
+
+                                if ((IOStatus & 0x4) > 0)//+EL
+                                {
+                                    pbx_PosHELZ.BackColor = Color.Red;
+                                }
+                                else
+                                {
+                                    pbx_PosHELZ.BackColor = Color.Gray;
+                                }
+
+                                if ((IOStatus & 0x8) > 0)//-EL
+                                {
+                                    pbx_NegHELZ.BackColor = Color.Red;
+                                }
+                                else
+                                {
+                                    pbx_NegHELZ.BackColor = Color.Gray;
+                                }
+                                break;
+                        }
+
+                    }
+
 
                     /*a_E.GetState(ref Es);                           //取得E軸狀態
                     txt_StateE.Text = ((AxisState)Es).ToString();   //顯示E軸狀態
@@ -912,6 +1000,11 @@ namespace _50
 
                     Motion.mAcm_AxStopDec(m_Axishand[i]);
                 }
+                Motion.mAcm_GpGetState(m_GpHand, ref AxState);
+                if (AxState == (uint)AxisState.STA_AX_ERROR_STOP)
+                { Motion.mAcm_GpResetError(m_GpHand); }
+
+                Motion.mAcm_GpStopDec(m_GpHand);
             }
             return;
         }
@@ -1246,6 +1339,118 @@ namespace _50
         private void ckb_Reverse_CheckedChanged(object sender, EventArgs e)
         {
             KeyPosition();
+        }
+
+        private void btn_GoHome_Click(object sender, EventArgs e)
+        {
+            UInt32 Result;
+            UInt32 PropertyVal = new UInt32();
+            double Vel = new double();
+            double CrossDistance = new double();
+            if (!m_bInit)
+            {
+                return;
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                Vel = 2000;
+                Result = Motion.mAcm_SetProperty(m_Axishand[i], (uint)PropertyID.PAR_AxVelLow, ref Vel, (uint)Marshal.SizeOf(typeof(double)));
+                if (Result != (uint)ErrorCode.SUCCESS)
+                {
+                    MessageBox.Show("Set Property-PAR_AxVelLow Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                Vel = 8000;
+                Result = Motion.mAcm_SetProperty(m_Axishand[i], (uint)PropertyID.PAR_AxVelHigh, ref Vel, (uint)Marshal.SizeOf(typeof(double)));
+                if (Result != (uint)ErrorCode.SUCCESS)
+                {
+                    MessageBox.Show("Set Property-PAR_AxVelHigh Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                PropertyVal = 1;
+                Result = Motion.mAcm_SetProperty(m_Axishand[i], (uint)PropertyID.PAR_AxHomeExSwitchMode, ref PropertyVal, (uint)Marshal.SizeOf(typeof(UInt32)));
+                if (Result != (uint)ErrorCode.SUCCESS)
+                {
+                    MessageBox.Show("Set Property-PAR_AxHomeExSwitchMode Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                CrossDistance = 0;
+                Result = Motion.mAcm_SetProperty(m_Axishand[i], (uint)PropertyID.PAR_AxHomeCrossDistance, ref CrossDistance, (uint)Marshal.SizeOf(typeof(double)));
+                if (Result != (uint)ErrorCode.SUCCESS)
+                {
+                    MessageBox.Show("Set Property-AxHomeCrossDistance Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                UInt32 dir = 0;
+                switch (i)
+                {
+                    case 0:
+                        dir = 0;
+                        break;
+                    case 1:
+                        dir = 0;
+                        break;
+                    case 2:
+                        dir = 0;
+                        break;
+                }
+                Result = Motion.mAcm_AxHome(m_Axishand[i], (UInt32)1, dir);
+                if (Result != (uint)ErrorCode.SUCCESS)
+                {
+                    MessageBox.Show("AxHome Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+            HomeCome = true;
+            timer_HomeWait.Enabled = true;
+            return;
+        }
+
+        bool HomeCome = true;
+        private void timer_HomeWait_Tick(object sender, EventArgs e)
+        {
+            if (HomeCome)
+            {
+                if (sp[0] == (UInt16)AxisState.STA_AX_READY && sp[1] == (UInt16)AxisState.STA_AX_READY && sp[2] == (UInt16)AxisState.STA_AX_READY)
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                Key[i] = -300000;
+                                break;
+                            case 1:
+                                Key[i] = -200000;
+                                break;
+                            case 2:
+                                Key[i] = -100000;
+                                break;
+                        }
+                        E = 0;
+                    }
+                    Vel = 8000;
+                    VelLow = 4000;
+                    Acc = 2000;
+                    Dec = 2000;
+                    GroupMove();
+                    HomeCome = false;
+                }
+            }
+            else
+            {
+                if (sp[0] == (UInt16)AxisState.STA_AX_READY && sp[1] == (UInt16)AxisState.STA_AX_READY && sp[2] == (UInt16)AxisState.STA_AX_READY)
+                {
+                    //將每一軸設定理論位置到0
+                    for (int i = 0; i < 4; i++)
+                    {
+                        double cmdPosition = new double();
+                        cmdPosition = 0;
+                        Motion.mAcm_AxSetCmdPosition(m_Axishand[i], cmdPosition);
+                    }
+                    timer_HomeWait.Enabled = false;
+                }
+            }
         }
     }
 }
