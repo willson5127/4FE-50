@@ -34,7 +34,10 @@ namespace _50
         IntPtr[] m_Axishand = new IntPtr[32];
 
         ushort[] sp = new ushort[4] ;
-        double VelHigh = 1000;
+        double[] EndArray = new double[32];
+        double[] Key = new double[4];
+        double E;
+        double Vel = 1000;
         double VelLow = 0;
         double Acc = 50;
         double Dec = 50;
@@ -45,6 +48,7 @@ namespace _50
         uint deviceCount = 0;
         uint AxCountInGp = 0;
         uint DeviceNum = 0;
+        uint EndPointNum = 0;
         uint BoardID = 0;       //E軸卡ID
         uint m_ulAxisCount = 0;
         bool m_bInit = false;
@@ -95,20 +99,21 @@ namespace _50
             this.txt_EVelHigh = new System.Windows.Forms.TextBox();
             this.label36 = new System.Windows.Forms.Label();
             this.gbx_MultipleAxisControl = new System.Windows.Forms.GroupBox();
+            this.nud_MultipleMovePosition3 = new System.Windows.Forms.NumericUpDown();
+            this.nud_MultipleMovePosition2 = new System.Windows.Forms.NumericUpDown();
+            this.nud_MultipleMovePosition1 = new System.Windows.Forms.NumericUpDown();
+            this.nud_MultipleMovePosition0 = new System.Windows.Forms.NumericUpDown();
+            this.textBoxEnd = new System.Windows.Forms.TextBox();
             this.ckb_Reverse = new System.Windows.Forms.CheckBox();
             this.lbl_CtrlE = new System.Windows.Forms.Label();
             this.lbl_CtrlZ = new System.Windows.Forms.Label();
             this.lbl_CtrlY = new System.Windows.Forms.Label();
             this.lbl_CtrlX = new System.Windows.Forms.Label();
             this.btn_AxisMultipleStop = new System.Windows.Forms.Button();
-            this.txt_MultipleMovePosition3 = new System.Windows.Forms.TextBox();
-            this.txt_MultipleMovePosition2 = new System.Windows.Forms.TextBox();
-            this.txt_MultipleMovePosition1 = new System.Windows.Forms.TextBox();
             this.cbx_AxisOpen3 = new System.Windows.Forms.TextBox();
             this.cbx_AxisOpen2 = new System.Windows.Forms.TextBox();
             this.cbx_AxisOpen1 = new System.Windows.Forms.TextBox();
             this.cbx_AxisOpen0 = new System.Windows.Forms.TextBox();
-            this.txt_MultipleMovePosition0 = new System.Windows.Forms.TextBox();
             this.btn_AxisMultipleMove = new System.Windows.Forms.Button();
             this.gbx_MoveWay = new System.Windows.Forms.GroupBox();
             this.rbtn_Relatively = new System.Windows.Forms.RadioButton();
@@ -131,7 +136,6 @@ namespace _50
             this.tbx_AisxPosition = new System.Windows.Forms.TextBox();
             this.lbl_AxisState = new System.Windows.Forms.Label();
             this.gbx_SingleAxisControl = new System.Windows.Forms.GroupBox();
-            this.btn_AddAxes = new System.Windows.Forms.Button();
             this.btn_AxisStop = new System.Windows.Forms.Button();
             this.tbx_MovePosition = new System.Windows.Forms.TextBox();
             this.btn_AxisMove = new System.Windows.Forms.Button();
@@ -154,18 +158,19 @@ namespace _50
             this.ofd_LoadConfigFile = new System.Windows.Forms.OpenFileDialog();
             this.ofd_Gcode = new System.Windows.Forms.OpenFileDialog();
             this.time_GcodeRead = new System.Windows.Forms.Timer(this.components);
-            this.time_GcodeSkip = new System.Windows.Forms.Timer(this.components);
             this.instantDoCtrl1 = new Automation.BDaq.InstantDoCtrl(this.components);
             this.instantAiCtrl1 = new Automation.BDaq.InstantAiCtrl(this.components);
             this.timer_USB = new System.Windows.Forms.Timer(this.components);
-            this.listBoxAxesInGp = new System.Windows.Forms.ListBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.tcl_Window00.SuspendLayout();
             this.tp1_Test.SuspendLayout();
             this.gbx_Gcode.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Gcode)).BeginInit();
             this.gbx_VelocitySet.SuspendLayout();
             this.gbx_MultipleAxisControl.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_MultipleMovePosition3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_MultipleMovePosition2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_MultipleMovePosition1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_MultipleMovePosition0)).BeginInit();
             this.gbx_MoveWay.SuspendLayout();
             this.gbx_MultipleAxisState.SuspendLayout();
             this.gbx_AxisState.SuspendLayout();
@@ -188,7 +193,6 @@ namespace _50
             // 
             // tp1_Test
             // 
-            this.tp1_Test.Controls.Add(this.listBoxAxesInGp);
             this.tp1_Test.Controls.Add(this.gbx_Gcode);
             this.tp1_Test.Controls.Add(this.gbx_VelocitySet);
             this.tp1_Test.Controls.Add(this.gbx_MultipleAxisControl);
@@ -224,6 +228,7 @@ namespace _50
             // 
             this.txt_Z.Location = new System.Drawing.Point(6, 152);
             this.txt_Z.Name = "txt_Z";
+            this.txt_Z.ReadOnly = true;
             this.txt_Z.Size = new System.Drawing.Size(100, 22);
             this.txt_Z.TabIndex = 10;
             // 
@@ -231,6 +236,7 @@ namespace _50
             // 
             this.txt_Y.Location = new System.Drawing.Point(6, 124);
             this.txt_Y.Name = "txt_Y";
+            this.txt_Y.ReadOnly = true;
             this.txt_Y.Size = new System.Drawing.Size(100, 22);
             this.txt_Y.TabIndex = 10;
             // 
@@ -238,6 +244,7 @@ namespace _50
             // 
             this.txt_X.Location = new System.Drawing.Point(6, 96);
             this.txt_X.Name = "txt_X";
+            this.txt_X.ReadOnly = true;
             this.txt_X.Size = new System.Drawing.Size(100, 22);
             this.txt_X.TabIndex = 10;
             // 
@@ -245,6 +252,7 @@ namespace _50
             // 
             this.txt_G.Location = new System.Drawing.Point(6, 68);
             this.txt_G.Name = "txt_G";
+            this.txt_G.ReadOnly = true;
             this.txt_G.Size = new System.Drawing.Size(100, 22);
             this.txt_G.TabIndex = 10;
             // 
@@ -473,20 +481,21 @@ namespace _50
             // 
             // gbx_MultipleAxisControl
             // 
+            this.gbx_MultipleAxisControl.Controls.Add(this.nud_MultipleMovePosition3);
+            this.gbx_MultipleAxisControl.Controls.Add(this.nud_MultipleMovePosition2);
+            this.gbx_MultipleAxisControl.Controls.Add(this.nud_MultipleMovePosition1);
+            this.gbx_MultipleAxisControl.Controls.Add(this.nud_MultipleMovePosition0);
+            this.gbx_MultipleAxisControl.Controls.Add(this.textBoxEnd);
             this.gbx_MultipleAxisControl.Controls.Add(this.ckb_Reverse);
             this.gbx_MultipleAxisControl.Controls.Add(this.lbl_CtrlE);
             this.gbx_MultipleAxisControl.Controls.Add(this.lbl_CtrlZ);
             this.gbx_MultipleAxisControl.Controls.Add(this.lbl_CtrlY);
             this.gbx_MultipleAxisControl.Controls.Add(this.lbl_CtrlX);
             this.gbx_MultipleAxisControl.Controls.Add(this.btn_AxisMultipleStop);
-            this.gbx_MultipleAxisControl.Controls.Add(this.txt_MultipleMovePosition3);
-            this.gbx_MultipleAxisControl.Controls.Add(this.txt_MultipleMovePosition2);
-            this.gbx_MultipleAxisControl.Controls.Add(this.txt_MultipleMovePosition1);
             this.gbx_MultipleAxisControl.Controls.Add(this.cbx_AxisOpen3);
             this.gbx_MultipleAxisControl.Controls.Add(this.cbx_AxisOpen2);
             this.gbx_MultipleAxisControl.Controls.Add(this.cbx_AxisOpen1);
             this.gbx_MultipleAxisControl.Controls.Add(this.cbx_AxisOpen0);
-            this.gbx_MultipleAxisControl.Controls.Add(this.txt_MultipleMovePosition0);
             this.gbx_MultipleAxisControl.Controls.Add(this.btn_AxisMultipleMove);
             this.gbx_MultipleAxisControl.Location = new System.Drawing.Point(214, 109);
             this.gbx_MultipleAxisControl.Name = "gbx_MultipleAxisControl";
@@ -494,6 +503,102 @@ namespace _50
             this.gbx_MultipleAxisControl.TabIndex = 6;
             this.gbx_MultipleAxisControl.TabStop = false;
             this.gbx_MultipleAxisControl.Text = "MultipleAxisControl";
+            // 
+            // nud_MultipleMovePosition3
+            // 
+            this.nud_MultipleMovePosition3.Location = new System.Drawing.Point(6, 99);
+            this.nud_MultipleMovePosition3.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.nud_MultipleMovePosition3.Minimum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            -2147483648});
+            this.nud_MultipleMovePosition3.Name = "nud_MultipleMovePosition3";
+            this.nud_MultipleMovePosition3.Size = new System.Drawing.Size(100, 22);
+            this.nud_MultipleMovePosition3.TabIndex = 7;
+            this.nud_MultipleMovePosition3.Value = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            // 
+            // nud_MultipleMovePosition2
+            // 
+            this.nud_MultipleMovePosition2.Location = new System.Drawing.Point(6, 73);
+            this.nud_MultipleMovePosition2.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.nud_MultipleMovePosition2.Minimum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            -2147483648});
+            this.nud_MultipleMovePosition2.Name = "nud_MultipleMovePosition2";
+            this.nud_MultipleMovePosition2.Size = new System.Drawing.Size(100, 22);
+            this.nud_MultipleMovePosition2.TabIndex = 7;
+            this.nud_MultipleMovePosition2.Value = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            // 
+            // nud_MultipleMovePosition1
+            // 
+            this.nud_MultipleMovePosition1.Location = new System.Drawing.Point(6, 47);
+            this.nud_MultipleMovePosition1.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.nud_MultipleMovePosition1.Minimum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            -2147483648});
+            this.nud_MultipleMovePosition1.Name = "nud_MultipleMovePosition1";
+            this.nud_MultipleMovePosition1.Size = new System.Drawing.Size(100, 22);
+            this.nud_MultipleMovePosition1.TabIndex = 7;
+            this.nud_MultipleMovePosition1.Value = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            // 
+            // nud_MultipleMovePosition0
+            // 
+            this.nud_MultipleMovePosition0.Location = new System.Drawing.Point(6, 22);
+            this.nud_MultipleMovePosition0.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.nud_MultipleMovePosition0.Minimum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            -2147483648});
+            this.nud_MultipleMovePosition0.Name = "nud_MultipleMovePosition0";
+            this.nud_MultipleMovePosition0.Size = new System.Drawing.Size(100, 22);
+            this.nud_MultipleMovePosition0.TabIndex = 7;
+            this.nud_MultipleMovePosition0.Value = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            // 
+            // textBoxEnd
+            // 
+            this.textBoxEnd.Location = new System.Drawing.Point(177, 131);
+            this.textBoxEnd.Name = "textBoxEnd";
+            this.textBoxEnd.Size = new System.Drawing.Size(41, 22);
+            this.textBoxEnd.TabIndex = 34;
+            this.textBoxEnd.Text = "10000";
             // 
             // ckb_Reverse
             // 
@@ -543,37 +648,13 @@ namespace _50
             // 
             // btn_AxisMultipleStop
             // 
-            this.btn_AxisMultipleStop.Location = new System.Drawing.Point(87, 153);
+            this.btn_AxisMultipleStop.Location = new System.Drawing.Point(103, 153);
             this.btn_AxisMultipleStop.Name = "btn_AxisMultipleStop";
-            this.btn_AxisMultipleStop.Size = new System.Drawing.Size(107, 47);
+            this.btn_AxisMultipleStop.Size = new System.Drawing.Size(115, 47);
             this.btn_AxisMultipleStop.TabIndex = 5;
             this.btn_AxisMultipleStop.Text = "Stop";
             this.btn_AxisMultipleStop.UseVisualStyleBackColor = true;
             this.btn_AxisMultipleStop.Click += new System.EventHandler(this.btn_AxisMultipleStop_Click);
-            // 
-            // txt_MultipleMovePosition3
-            // 
-            this.txt_MultipleMovePosition3.Location = new System.Drawing.Point(6, 99);
-            this.txt_MultipleMovePosition3.Name = "txt_MultipleMovePosition3";
-            this.txt_MultipleMovePosition3.Size = new System.Drawing.Size(100, 22);
-            this.txt_MultipleMovePosition3.TabIndex = 3;
-            this.txt_MultipleMovePosition3.Text = "10000";
-            // 
-            // txt_MultipleMovePosition2
-            // 
-            this.txt_MultipleMovePosition2.Location = new System.Drawing.Point(6, 73);
-            this.txt_MultipleMovePosition2.Name = "txt_MultipleMovePosition2";
-            this.txt_MultipleMovePosition2.Size = new System.Drawing.Size(100, 22);
-            this.txt_MultipleMovePosition2.TabIndex = 3;
-            this.txt_MultipleMovePosition2.Text = "10000";
-            // 
-            // txt_MultipleMovePosition1
-            // 
-            this.txt_MultipleMovePosition1.Location = new System.Drawing.Point(6, 47);
-            this.txt_MultipleMovePosition1.Name = "txt_MultipleMovePosition1";
-            this.txt_MultipleMovePosition1.Size = new System.Drawing.Size(100, 22);
-            this.txt_MultipleMovePosition1.TabIndex = 3;
-            this.txt_MultipleMovePosition1.Text = "10000";
             // 
             // cbx_AxisOpen3
             // 
@@ -607,19 +688,11 @@ namespace _50
             this.cbx_AxisOpen0.Size = new System.Drawing.Size(82, 22);
             this.cbx_AxisOpen0.TabIndex = 3;
             // 
-            // txt_MultipleMovePosition0
-            // 
-            this.txt_MultipleMovePosition0.Location = new System.Drawing.Point(6, 21);
-            this.txt_MultipleMovePosition0.Name = "txt_MultipleMovePosition0";
-            this.txt_MultipleMovePosition0.Size = new System.Drawing.Size(100, 22);
-            this.txt_MultipleMovePosition0.TabIndex = 3;
-            this.txt_MultipleMovePosition0.Text = "10000";
-            // 
             // btn_AxisMultipleMove
             // 
             this.btn_AxisMultipleMove.Location = new System.Drawing.Point(6, 153);
             this.btn_AxisMultipleMove.Name = "btn_AxisMultipleMove";
-            this.btn_AxisMultipleMove.Size = new System.Drawing.Size(75, 47);
+            this.btn_AxisMultipleMove.Size = new System.Drawing.Size(91, 47);
             this.btn_AxisMultipleMove.TabIndex = 4;
             this.btn_AxisMultipleMove.Text = "Move";
             this.btn_AxisMultipleMove.UseVisualStyleBackColor = true;
@@ -817,8 +890,6 @@ namespace _50
             // 
             // gbx_SingleAxisControl
             // 
-            this.gbx_SingleAxisControl.Controls.Add(this.textBox1);
-            this.gbx_SingleAxisControl.Controls.Add(this.btn_AddAxes);
             this.gbx_SingleAxisControl.Controls.Add(this.btn_AxisStop);
             this.gbx_SingleAxisControl.Controls.Add(this.tbx_MovePosition);
             this.gbx_SingleAxisControl.Controls.Add(this.btn_AxisMove);
@@ -829,16 +900,6 @@ namespace _50
             this.gbx_SingleAxisControl.TabIndex = 2;
             this.gbx_SingleAxisControl.TabStop = false;
             this.gbx_SingleAxisControl.Text = "SingleAxisControl";
-            // 
-            // btn_AddAxes
-            // 
-            this.btn_AddAxes.Location = new System.Drawing.Point(6, 71);
-            this.btn_AddAxes.Name = "btn_AddAxes";
-            this.btn_AddAxes.Size = new System.Drawing.Size(75, 23);
-            this.btn_AddAxes.TabIndex = 6;
-            this.btn_AddAxes.Text = "Add Axis";
-            this.btn_AddAxes.UseVisualStyleBackColor = true;
-            this.btn_AddAxes.Click += new System.EventHandler(this.btn_AddAxes_Click);
             // 
             // btn_AxisStop
             // 
@@ -1036,10 +1097,6 @@ namespace _50
             // 
             this.time_GcodeRead.Tick += new System.EventHandler(this.time_GcodeRead_Tick);
             // 
-            // time_GcodeSkip
-            // 
-            this.time_GcodeSkip.Tick += new System.EventHandler(this.time_GcodeSkip_Tick);
-            // 
             // instantDoCtrl1
             // 
             this.instantDoCtrl1._StateStream = ((Automation.BDaq.DeviceStateStreamer)(resources.GetObject("instantDoCtrl1._StateStream")));
@@ -1052,23 +1109,6 @@ namespace _50
             // 
             this.timer_USB.Interval = 500;
             this.timer_USB.Tick += new System.EventHandler(this.timer_USB_Tick);
-            // 
-            // listBoxAxesInGp
-            // 
-            this.listBoxAxesInGp.BackColor = System.Drawing.SystemColors.Control;
-            this.listBoxAxesInGp.FormattingEnabled = true;
-            this.listBoxAxesInGp.ItemHeight = 12;
-            this.listBoxAxesInGp.Location = new System.Drawing.Point(674, 118);
-            this.listBoxAxesInGp.Name = "listBoxAxesInGp";
-            this.listBoxAxesInGp.Size = new System.Drawing.Size(88, 76);
-            this.listBoxAxesInGp.TabIndex = 31;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(87, 71);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(36, 22);
-            this.textBox1.TabIndex = 7;
             // 
             // Form1
             // 
@@ -1089,6 +1129,10 @@ namespace _50
             this.gbx_VelocitySet.PerformLayout();
             this.gbx_MultipleAxisControl.ResumeLayout(false);
             this.gbx_MultipleAxisControl.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_MultipleMovePosition3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_MultipleMovePosition2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_MultipleMovePosition1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_MultipleMovePosition0)).EndInit();
             this.gbx_MoveWay.ResumeLayout(false);
             this.gbx_MoveWay.PerformLayout();
             this.gbx_MultipleAxisState.ResumeLayout(false);
@@ -1130,11 +1174,7 @@ namespace _50
         private System.Windows.Forms.TextBox tbx_MovePosition;
         private System.Windows.Forms.GroupBox gbx_MultipleAxisControl;
         private System.Windows.Forms.Button btn_AxisMultipleStop;
-        private System.Windows.Forms.TextBox txt_MultipleMovePosition0;
         private System.Windows.Forms.Button btn_AxisMultipleMove;
-        private System.Windows.Forms.TextBox txt_MultipleMovePosition3;
-        private System.Windows.Forms.TextBox txt_MultipleMovePosition2;
-        private System.Windows.Forms.TextBox txt_MultipleMovePosition1;
         private System.Windows.Forms.TextBox cbx_AxisOpen3;
         private System.Windows.Forms.TextBox cbx_AxisOpen2;
         private System.Windows.Forms.TextBox cbx_AxisOpen1;
@@ -1170,7 +1210,6 @@ namespace _50
         private System.Windows.Forms.Button btn_OpenFile;
         private System.Windows.Forms.OpenFileDialog ofd_Gcode;
         private System.Windows.Forms.Timer time_GcodeRead;
-        private System.Windows.Forms.Timer time_GcodeSkip;
         private System.Windows.Forms.TabPage tp1_HlaconTest;
         private System.Windows.Forms.Button button1;
         private HalconDotNet.HWindowControl hWindowControl1;
@@ -1200,9 +1239,11 @@ namespace _50
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txt_EVelHigh;
         private System.Windows.Forms.Label label36;
-        private System.Windows.Forms.Button btn_AddAxes;
-        private System.Windows.Forms.ListBox listBoxAxesInGp;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBoxEnd;
+        private System.Windows.Forms.NumericUpDown nud_MultipleMovePosition3;
+        private System.Windows.Forms.NumericUpDown nud_MultipleMovePosition2;
+        private System.Windows.Forms.NumericUpDown nud_MultipleMovePosition1;
+        private System.Windows.Forms.NumericUpDown nud_MultipleMovePosition0;
     }
 }
 

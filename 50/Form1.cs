@@ -35,6 +35,190 @@ namespace _50
             
         }
 
+        void KeyPosition()
+        {
+            for(int i = 0; i < m_ulAxisCount - 1; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        try
+                        {
+                            Key[i] = Convert.ToDouble(nud_MultipleMovePosition0.Text);
+                        }
+                        catch
+                        {
+                            nud_MultipleMovePosition0.Value = 0;
+                            Key[i] = Convert.ToDouble(nud_MultipleMovePosition0.Value);
+                        }
+                        break;
+                    case 1:
+                        try
+                        {
+                            Key[i] = Convert.ToDouble(nud_MultipleMovePosition1.Text);
+                        }
+                        catch
+                        {
+                            nud_MultipleMovePosition1.Value = 0;
+                            Key[i] = Convert.ToDouble(nud_MultipleMovePosition1.Value);
+                        }
+                        break;
+                    case 2:
+                        try
+                        {
+                            Key[i] = Convert.ToDouble(nud_MultipleMovePosition2.Text);
+                        }
+                        catch
+                        {
+                            nud_MultipleMovePosition2.Value = 0;
+                            Key[i] = Convert.ToDouble(nud_MultipleMovePosition2.Value);
+                        }
+                        break;
+                }
+            }
+
+            try
+            {
+                E = Convert.ToDouble(nud_MultipleMovePosition3.Text);
+            }
+            catch
+            {
+                nud_MultipleMovePosition3.Value = 0;
+                E = Convert.ToDouble(nud_MultipleMovePosition3.Value);
+            }
+
+            if (ckb_Reverse.Checked)
+            {
+                Key[0] = -Key[0];
+                Key[1] = -Key[1];
+                Key[2] = -Key[2];
+                E = -E;
+            }
+
+            if (rbtn_Asolute.Checked)
+            {                
+                Key[0] = Math.Abs(Key[0]);
+                Key[1] = Math.Abs(Key[1]);
+                Key[2] = Math.Abs(Key[2]);
+                E = Math.Abs(E);
+            }
+        }
+
+        void GroupMove()
+        {
+            uint Result;
+            uint AxisNum = new uint();
+            UInt16 State = new UInt16();
+            if (m_bInit != true)
+            {
+                return;
+            }
+
+            Result = Motion.mAcm_GpGetState(m_GpHand, ref State);
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Gp Get State Failed", "Line", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (State != (UInt16)GroupState.STA_Gp_Ready)
+            {
+                MessageBox.Show("Gp's State Error", "Line", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            double par_GpVelHigh = Vel;
+            double par_GpVelLow = VelLow;
+            double par_GpAcc = Acc;
+            double par_GpDec = Dec;
+
+            Result = Motion.mAcm_SetProperty(m_GpHand, (uint)PropertyID.PAR_GpVelHigh, ref par_GpVelHigh, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Move Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Line", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Result = Motion.mAcm_SetProperty(m_GpHand, (uint)PropertyID.PAR_GpVelLow, ref par_GpVelLow, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Result = Motion.mAcm_SetProperty(m_GpHand, (uint)PropertyID.PAR_GpAcc, ref par_GpAcc, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Result = Motion.mAcm_SetProperty(m_GpHand, (uint)PropertyID.PAR_GpDec, ref par_GpDec, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            AxisNum = AxCountInGp;
+            if (rbtn_Relatively.Checked)
+            {
+                Result = Motion.mAcm_GpMoveLinearRel(m_GpHand, Key, ref AxisNum);
+            }
+            else
+                Result = Motion.mAcm_GpMoveLinearAbs(m_GpHand, Key, ref AxisNum);
+
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Move Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Line", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            double par_VelHigh = VelHighE;
+            double par_VelLow = VelHighE;
+            double par_Acc = VelHighE;
+            double par_Dec = VelHighE;
+
+
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelHigh, ref par_VelHigh, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelLow, ref par_VelLow, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxAcc, ref par_Acc, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxDec, ref par_Dec, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (rbtn_Relatively.Checked)
+            {
+                Result = Motion.mAcm_AxMoveRel(m_Axishand[3], E);
+            }
+            else
+            {
+                Result = Motion.mAcm_AxMoveAbs(m_Axishand[3], E);
+            }
+
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("PTP Move Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "PTP", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            return;
+        }
+
         void MultipleMove(double move0, double move1, double move2, double move3)
         {
             UInt32 Result;
@@ -67,9 +251,9 @@ namespace _50
                 double mid = Math.Pow(x_k, 2) + Math.Pow(y_k, 2) + Math.Pow(z_k, 2);
                 double max_distance = Math.Sqrt(mid);                   //移動距離
 
-                par_VelHigh[0] = VelHigh * Math.Abs(x_k / max_distance);//照移動路徑設定X軸運行速度
-                par_VelHigh[1] = VelHigh * Math.Abs(y_k / max_distance);//照移動路徑設定Y軸運行速度
-                par_VelHigh[2] = VelHigh * Math.Abs(z_k / max_distance);//照移動路徑設定Z軸運行速度
+                par_VelHigh[0] = Vel * Math.Abs(x_k / max_distance);//照移動路徑設定X軸運行速度
+                par_VelHigh[1] = Vel * Math.Abs(y_k / max_distance);//照移動路徑設定Y軸運行速度
+                par_VelHigh[2] = Vel * Math.Abs(z_k / max_distance);//照移動路徑設定Z軸運行速度
                 par_VelHigh[3] = VelHighE;                               //照移動路徑設定E軸運行速度
 
                 par_VelLow[0] = VelLow;
@@ -295,6 +479,9 @@ namespace _50
                     //命令軸減速停止
                     Motion.mAcm_AxStopDec(m_Axishand[AxisNum]);
                 }
+                //洗白軸群組
+                Motion.mAcm_GpClose(ref m_GpHand);
+                m_GpHand = IntPtr.Zero;
                 //Close Axes
                 //關閉軸
                 for (AxisNum = 0; AxisNum < m_ulAxisCount; AxisNum++)
@@ -335,6 +522,24 @@ namespace _50
             //uint uDeviceType = 0;           //軸卡型號代號
 
             OpenBoard();
+
+            uint Result;
+            if (m_bInit != true)
+            {
+                return;
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                AxCountInGp++;
+                Result = Motion.mAcm_GpAddAxis(ref m_GpHand, m_Axishand[i]);
+                if (Result != (uint)ErrorCode.SUCCESS)
+                {
+                    MessageBox.Show("Add Axis To Group Failed", "Line", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            KeyPosition();
 
             /*//E
             uDeviceType = DeviceNum >> 24 & 0xff;               //轉換代碼成型號代號
@@ -640,6 +845,10 @@ namespace _50
         //多軸移動
         private void btn_AxisMultipleMove_Click(object sender, EventArgs e)
         {
+            KeyPosition();
+            GroupMove();
+
+            /*
             double move0, move1, move2, move3;
             try
             {
@@ -686,7 +895,7 @@ namespace _50
                 move3 = -move3;
             }
 
-            MultipleMove(move0, move1, move2, move3);
+            MultipleMove(move0, move1, move2, move3);*/
         }
 
         private void btn_AxisMultipleStop_Click(object sender, EventArgs e)
@@ -709,7 +918,7 @@ namespace _50
 
         private void btn_SetVel_Click(object sender, EventArgs e)
         {
-            VelHigh = Convert.ToDouble(txt_VelHigh.Text);
+            Vel = Convert.ToDouble(txt_VelHigh.Text);
             VelLow = Convert.ToDouble(txt_VelLow.Text);
             Acc = Convert.ToDouble(txt_Acc.Text);
             Dec = Convert.ToDouble(txt_Dec.Text);
@@ -723,7 +932,9 @@ namespace _50
         private void rbtn_Asolute_CheckedChanged(object sender, EventArgs e)
         {
             if (rbtn_Asolute.Checked)
+            {
                 ckb_Reverse.Enabled = false;
+            }
             else
                 ckb_Reverse.Enabled = true;
         }
@@ -783,7 +994,7 @@ namespace _50
         {
             if (currentGcode != dgv_Gcode.RowCount - 1)
             {
-                UInt16 AxState = new UInt16();
+                UInt16 GpState = new UInt16();
                 UInt32 result;                                                          //宣告讀取碼對照組
                                                                                         //以區分大小寫形式宣告Gcode讀寫規則
                 Regex Gcode = new Regex("[xyzg]-?[0-9]*.?([0-9]­*[0-9]­*[0-9]­*|[0-9]­*[0-9]­*|[0-9]­*)", RegexOptions.IgnoreCase);
@@ -841,27 +1052,28 @@ namespace _50
                     if (txt_X.Text != "" && txt_Y.Text != "" && txt_Z.Text != "")   //判定有無效
                     {
 
-                        //輸入位置
-                        double move0, move1, move2, move3;
-                        move0 = Convert.ToDouble(txt_X.Text);
-                        move1 = Convert.ToDouble(txt_Y.Text);
-                        move2 = Convert.ToDouble(txt_Z.Text);
+                        //輸入位置                        
+                        Key[0] = Convert.ToDouble(txt_X.Text);
+                        Key[1] = Convert.ToDouble(txt_Y.Text);
+                        Key[2] = Convert.ToDouble(txt_Z.Text);
 
                         rbtn_Relatively.Checked = false;
                         rbtn_Asolute.Checked = true;
-                        move3 = 0;
+                        E = 0;
 
-                        for (int i = 0; i < m_ulAxisCount; i++)
+                        result = Motion.mAcm_GpGetState(m_GpHand, ref GpState);
+                        if (result != (uint)ErrorCode.SUCCESS)
                         {
-                            Motion.mAcm_AxGetState(m_Axishand[i], ref AxState);
-                            sp[i] = AxState;
+                            MessageBox.Show("Gp Get State Failed", "Line", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
                         }
-                        if (!(sp[0] == 5 || sp[1] == 5 || sp[2] == 5))
+                       
+                        if (GpState == (UInt16)GroupState.STA_Gp_Ready)
                         {
                             if (currentGcode != dgv_Gcode.RowCount - 1)
                             {
                                 //移動軸
-                                MultipleMove(move0, move1, move2, move3);
+                                GroupMove();
                                 currentGcode++;
                                 dgv_Gcode.CurrentCell = dgv_Gcode.Rows[currentGcode].Cells[0];         //程式碼表選取該應選的行號
                             }
@@ -903,23 +1115,6 @@ namespace _50
                 }*/
             }
         }
-
-        private void time_GcodeSkip_Tick(object sender, EventArgs e)
-        {
-            /*if (currentGcode != dgv_Gcode.RowCount - 1)                  //最後一行判定
-            {
-                dgv_Gcode.CurrentCell = dgv_Gcode.Rows[currentGcode].Cells[0];         //程式碼表選取該應選的行號
-                string str = dgv_Gcode.CurrentCell.Value.ToString();                   //取得該行號之程式碼
-
-                //G1判斷!!
-                bool skip = str.StartsWith("G1 ");              //宣告判斷布林
-                if (skip == false)                              //判斷是否G1開頭
-                {
-                    dgv_Gcode.CurrentCell = dgv_Gcode.Rows[currentGcode + 1].Cells[0];               //跳行
-                }
-            }*/
-        }
-
 
         //halcon測試
         int HA = 0;
@@ -1028,39 +1223,29 @@ namespace _50
             //結束
         }
 
-        private void btn_AddAxes_Click(object sender, EventArgs e)
+        private void nud_MultipleMovePosition0_ValueChanged(object sender, EventArgs e)
         {
-            uint Result;
-            uint AxesInfoInGp = new uint();
-            uint buffLen;
-            if (m_bInit != true)
-            {
-                return;
-            }
-            Result = Motion.mAcm_GpAddAxis(ref m_GpHand, m_Axishand[cbx_AxisSelect.SelectedIndex]);
-            if (Result != (uint)ErrorCode.SUCCESS)
-            {
-                MessageBox.Show("Add Axis To Group Failed", "Line", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            else//add axis success
-            {
-                AxCountInGp++;
-                listBoxAxesInGp.Items.Add(cbx_AxisSelect.Items[cbx_AxisSelect.SelectedIndex]);
-                buffLen = 4;
-                Result = Motion.mAcm_GetProperty(m_GpHand, (uint)PropertyID.CFG_GpAxesInGroup, ref AxesInfoInGp, ref buffLen);
-                if (Result == (uint)ErrorCode.SUCCESS)
-                {
-                    for (int i = 0; i < 32; i++)
-                    {
-                        if ((AxesInfoInGp & (0x1 << i)) > 0)
-                        {
-                            textBox1.Text = String.Format("{0:d}", i);
-                            break;
-                        }
-                    }
-                }
-            }
+            KeyPosition();
+        }
+
+        private void nud_MultipleMovePosition1_ValueChanged(object sender, EventArgs e)
+        {
+            KeyPosition();
+        }
+
+        private void nud_MultipleMovePosition2_ValueChanged(object sender, EventArgs e)
+        {
+            KeyPosition();
+        }
+
+        private void nud_MultipleMovePosition3_ValueChanged(object sender, EventArgs e)
+        {
+            KeyPosition();
+        }
+
+        private void ckb_Reverse_CheckedChanged(object sender, EventArgs e)
+        {
+            KeyPosition();
         }
     }
 }
