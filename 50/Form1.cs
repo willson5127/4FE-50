@@ -31,6 +31,17 @@ namespace _50
             tcl_Window00.Location = this.Location;
             tcl_Window00.Size = this.Size;
 
+            gbx_MoveWay.Enabled = false;
+            gbx_SingleAxisControl.Enabled = false;
+            gbx_AxisState.Enabled = false;
+            gbx_MultipleAxisState.Enabled = false;
+            gbx_MultipleAxisControl.Enabled = false;
+            gbx_VelocitySet.Enabled = false;
+            gbx_Gcode.Enabled = false;
+
+            btn_LoadConfig.Enabled = false;
+            btn_ServoControl.Enabled = false;
+            
 
             
         }
@@ -79,6 +90,7 @@ namespace _50
 
             try
             {
+
                 E = Convert.ToDouble(nud_MultipleMovePosition3.Text);
             }
             catch
@@ -201,6 +213,9 @@ namespace _50
                 return;
             }
 
+            if (!Etrigger)
+                E = 0;
+
             if (rbtn_Relatively.Checked)
             {
                 Result = Motion.mAcm_AxMoveRel(m_Axishand[3], E);
@@ -239,9 +254,9 @@ namespace _50
                 if (rbtn_Asolute.Checked)                             //絕對移動確認
                 {
 
-                    x = Convert.ToDouble(txt_PositionX.Text);                      //抓取XYZ座標
-                    y = Convert.ToDouble(txt_PositionY.Text);
-                    z = Convert.ToDouble(txt_PositionZ.Text);
+                    x = Convert.ToDouble(txt_CmdPositionX.Text);                      //抓取XYZ座標
+                    y = Convert.ToDouble(txt_CmdPositionY.Text);
+                    z = Convert.ToDouble(txt_CmdPositionZ.Text);
 
                     x_k -= x;
                     y_k -= y;
@@ -501,16 +516,20 @@ namespace _50
                 tbx_AisxPosition.Clear();
                 tbx_AxisState.Clear();
                 cbx_AxisOpen0.Clear();
-                txt_PositionX.Clear();
+                txt_CmdPositionX.Clear();
+                txt_ActPositionX.Clear();
                 txt_StateX.Clear();
                 cbx_AxisOpen1.Clear();
-                txt_PositionY.Clear();
+                txt_CmdPositionY.Clear();
+                txt_ActPositionY.Clear();
                 txt_StateY.Clear();
                 cbx_AxisOpen2.Clear();
-                txt_PositionZ.Clear();
+                txt_CmdPositionZ.Clear();
+                txt_ActPositionZ.Clear();
                 txt_StateZ.Clear();
                 cbx_AxisOpen3.Clear();
-                txt_PositionE.Clear();
+                txt_CmdPositionE.Clear();
+                txt_ActPositionE.Clear();
                 txt_StateE.Clear();
             }
         }
@@ -541,6 +560,9 @@ namespace _50
 
             KeyPosition();
 
+            btn_LoadConfig.Enabled = true;
+            btn_ServoControl.Enabled = true;
+
             /*//E
             uDeviceType = DeviceNum >> 24 & 0xff;               //轉換代碼成型號代號
             BoardID = (DeviceNum >> 12) & (0x00000fff);         //代碼轉換成ID
@@ -564,6 +586,7 @@ namespace _50
         private void timer1_Tick(object sender, EventArgs e)
         {
             double CurCmd = new double();
+            double CurAct = new double();
             UInt16 AxState = new UInt16();
             string strTemp = "";
             if (m_bInit)
@@ -612,6 +635,7 @@ namespace _50
                 for (int i = 0; i < m_ulAxisCount; i++)
                 {
                     Motion.mAcm_AxGetCmdPosition(m_Axishand[i], ref CurCmd);
+                    Motion.mAcm_AxGetActualPosition(m_Axishand[i], ref CurAct);
                     Motion.mAcm_AxGetState(m_Axishand[i], ref AxState);
                     sp[i] = AxState;
                     switch (AxState)
@@ -646,19 +670,23 @@ namespace _50
                     switch (i.ToString())
                     {
                         case "0":
-                            txt_PositionX.Text = Convert.ToString(CurCmd);
+                            txt_CmdPositionX.Text = Convert.ToString(CurCmd);
+                            txt_ActPositionX.Text = Convert.ToString(CurAct);
                             txt_StateX.Text = strTemp;
                             break;
                         case "1":
-                            txt_PositionY.Text = Convert.ToString(CurCmd);
+                            txt_CmdPositionY.Text = Convert.ToString(CurCmd);
+                            txt_ActPositionY.Text = Convert.ToString(CurAct);
                             txt_StateY.Text = strTemp;
                             break;
                         case "2":
-                            txt_PositionZ.Text = Convert.ToString(CurCmd);
+                            txt_CmdPositionZ.Text = Convert.ToString(CurCmd);
+                            txt_ActPositionZ.Text = Convert.ToString(CurAct);
                             txt_StateZ.Text = strTemp;
                             break;
                         case "3":
-                            txt_PositionE.Text = Convert.ToString(CurCmd);
+                            txt_CmdPositionE.Text = Convert.ToString(CurCmd);
+                            txt_ActPositionE.Text = Convert.ToString(CurAct);
                             txt_StateE.Text = strTemp;
                             break;
                         default:
@@ -676,6 +704,12 @@ namespace _50
                         txt_EVelLow.Enabled = true;
                         txt_EAcc.Enabled = true;
                         txt_EDec.Enabled = true;
+
+                        btn_AxisMove.Enabled = true;
+                        btn_AxisMultipleMove.Enabled = true;
+                        btn_GoHome.Enabled = true;
+                        btn_StartPrint.Enabled = true;
+                        btn_SetCmd.Enabled = true;
                     }
                     else
                     {
@@ -688,6 +722,14 @@ namespace _50
                         txt_EVelLow.Enabled = false;
                         txt_EAcc.Enabled = false;
                         txt_EDec.Enabled = false;
+
+                        btn_AxisMove.Enabled = false;
+                        btn_AxisMultipleMove.Enabled = false;
+                        btn_GoHome.Enabled = false;
+                        btn_StartPrint.Enabled = false;
+                        btn_SetCmd.Enabled = false;
+
+
                     }
 
                     UInt32 Result;
@@ -790,6 +832,18 @@ namespace _50
         private void btn_CloseDevice_Click(object sender, EventArgs e)
         {
             CloseBoard();
+
+
+            gbx_MoveWay.Enabled = false;
+            gbx_SingleAxisControl.Enabled = false;
+            gbx_AxisState.Enabled = false;
+            gbx_MultipleAxisState.Enabled = false;
+            gbx_MultipleAxisControl.Enabled = false;
+            gbx_VelocitySet.Enabled = false;
+            gbx_Gcode.Enabled = false;
+
+            btn_LoadConfig.Enabled = false;
+            btn_ServoControl.Enabled = false;
         }
 
         //匯入軸設定
@@ -836,6 +890,18 @@ namespace _50
                     }
                     m_bServoOn = true;
                     btn_ServoControl.Text = "Servo Off";
+
+                    gbx_MoveWay.Enabled = true;
+                    gbx_SingleAxisControl.Enabled = true;
+                    gbx_AxisState.Enabled = true;
+                    gbx_MultipleAxisState.Enabled = true;
+                    gbx_MultipleAxisControl.Enabled = true;
+                    gbx_VelocitySet.Enabled = true;
+                    gbx_Gcode.Enabled = true;
+
+                    cbx_DeviceSelect.Enabled = false;
+                    btn_OpenDevice.Enabled = false;
+                    btn_CloseDevice.Enabled = false;
                 }
             }
             else
@@ -851,8 +917,23 @@ namespace _50
                     }
                     m_bServoOn = false;
                     btn_ServoControl.Text = "Servo On";
+
+                    gbx_MoveWay.Enabled = false;
+                    gbx_SingleAxisControl.Enabled = false;
+                    gbx_AxisState.Enabled = false;
+                    gbx_MultipleAxisState.Enabled = false;
+                    gbx_MultipleAxisControl.Enabled = false;
+                    gbx_VelocitySet.Enabled = false;
+                    gbx_Gcode.Enabled = false;
+
+                    cbx_DeviceSelect.Enabled = true;
+                    btn_OpenDevice.Enabled = true;
+                    btn_CloseDevice.Enabled = true;
                 }
             }
+
+
+
         }
 
         private void btn_AxisMove_Click(object sender, EventArgs e)
@@ -1248,10 +1329,12 @@ namespace _50
             if (!timer_USB.Enabled)                         //加熱計時器啟動
             {
                 timer_USB.Enabled = true;
+                Etrigger = true;
             }
             else if (timer_USB.Enabled)                     //加熱計時器關閉並關閉加熱
             {
                 timer_USB.Enabled = false;
+                Etrigger = false;
                 DO_port = 0;
                 instantDoCtrl1.Write(0, DO_port);
             }
@@ -1353,14 +1436,14 @@ namespace _50
             }
             for (int i = 0; i < 3; i++)
             {
-                Vel = 2000;
+                Vel = 4000;
                 Result = Motion.mAcm_SetProperty(m_Axishand[i], (uint)PropertyID.PAR_AxVelLow, ref Vel, (uint)Marshal.SizeOf(typeof(double)));
                 if (Result != (uint)ErrorCode.SUCCESS)
                 {
                     MessageBox.Show("Set Property-PAR_AxVelLow Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                Vel = 8000;
+                Vel = 12000;
                 Result = Motion.mAcm_SetProperty(m_Axishand[i], (uint)PropertyID.PAR_AxVelHigh, ref Vel, (uint)Marshal.SizeOf(typeof(double)));
                 if (Result != (uint)ErrorCode.SUCCESS)
                 {
@@ -1429,10 +1512,10 @@ namespace _50
                         }
                         E = 0;
                     }
-                    Vel = 8000;
+                    Vel = 16000;
                     VelLow = 4000;
-                    Acc = 2000;
-                    Dec = 2000;
+                    Acc = 8000;
+                    Dec = 8000;
                     GroupMove();
                     HomeCome = false;
                 }
@@ -1447,9 +1530,19 @@ namespace _50
                         double cmdPosition = new double();
                         cmdPosition = 0;
                         Motion.mAcm_AxSetCmdPosition(m_Axishand[i], cmdPosition);
+                        Motion.mAcm_AxSetActualPosition(m_Axishand[i], cmdPosition);
                     }
+                    HomeCome = true;
                     timer_HomeWait.Enabled = false;
                 }
+            }
+        }
+
+        private void btn_SetCmd_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                Motion.mAcm_AxSetCmdPosition(m_Axishand[i], 0);
             }
         }
     }

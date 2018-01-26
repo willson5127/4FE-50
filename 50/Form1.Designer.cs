@@ -37,6 +37,7 @@ namespace _50
         double[] EndArray = new double[32];
         double[] Key = new double[4];
         double E;
+        bool Etrigger = false;
         double Vel = 1000;
         double VelLow = 0;
         double Acc = 50;
@@ -99,6 +100,8 @@ namespace _50
             this.txt_EVelHigh = new System.Windows.Forms.TextBox();
             this.label36 = new System.Windows.Forms.Label();
             this.gbx_MultipleAxisControl = new System.Windows.Forms.GroupBox();
+            this.btn_SetCmd = new System.Windows.Forms.Button();
+            this.btn_GoHome = new System.Windows.Forms.Button();
             this.nud_MultipleMovePosition3 = new System.Windows.Forms.NumericUpDown();
             this.nud_MultipleMovePosition2 = new System.Windows.Forms.NumericUpDown();
             this.nud_MultipleMovePosition1 = new System.Windows.Forms.NumericUpDown();
@@ -118,18 +121,41 @@ namespace _50
             this.rbtn_Relatively = new System.Windows.Forms.RadioButton();
             this.rbtn_Asolute = new System.Windows.Forms.RadioButton();
             this.gbx_MultipleAxisState = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
             this.lbl_StateE = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
             this.txt_StateE = new System.Windows.Forms.TextBox();
+            this.pbx_EZY = new System.Windows.Forms.PictureBox();
+            this.pbx_EZX = new System.Windows.Forms.PictureBox();
             this.lbl_StateZ = new System.Windows.Forms.Label();
-            this.txt_PositionE = new System.Windows.Forms.TextBox();
+            this.txt_CmdPositionE = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.pbx_NegHELZ = new System.Windows.Forms.PictureBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.pbx_NegHELY = new System.Windows.Forms.PictureBox();
             this.lbl_StateY = new System.Windows.Forms.Label();
+            this.pbx_NegHELX = new System.Windows.Forms.PictureBox();
+            this.pbx_PosHELZ = new System.Windows.Forms.PictureBox();
             this.txt_StateZ = new System.Windows.Forms.TextBox();
+            this.pbx_PosHELY = new System.Windows.Forms.PictureBox();
             this.lbl_StateX = new System.Windows.Forms.Label();
-            this.txt_PositionZ = new System.Windows.Forms.TextBox();
+            this.pbx_PosHELX = new System.Windows.Forms.PictureBox();
+            this.txt_CmdPositionZ = new System.Windows.Forms.TextBox();
             this.txt_StateY = new System.Windows.Forms.TextBox();
-            this.txt_PositionY = new System.Windows.Forms.TextBox();
+            this.txt_CmdPositionY = new System.Windows.Forms.TextBox();
             this.txt_StateX = new System.Windows.Forms.TextBox();
-            this.txt_PositionX = new System.Windows.Forms.TextBox();
+            this.txt_ActPositionE = new System.Windows.Forms.TextBox();
+            this.txt_ActPositionZ = new System.Windows.Forms.TextBox();
+            this.txt_ActPositionY = new System.Windows.Forms.TextBox();
+            this.txt_ActPositionX = new System.Windows.Forms.TextBox();
+            this.txt_CmdPositionX = new System.Windows.Forms.TextBox();
             this.gbx_AxisState = new System.Windows.Forms.GroupBox();
             this.tbx_AxisState = new System.Windows.Forms.TextBox();
             this.tbx_AisxPosition = new System.Windows.Forms.TextBox();
@@ -160,23 +186,6 @@ namespace _50
             this.instantDoCtrl1 = new Automation.BDaq.InstantDoCtrl(this.components);
             this.instantAiCtrl1 = new Automation.BDaq.InstantAiCtrl(this.components);
             this.timer_USB = new System.Windows.Forms.Timer(this.components);
-            this.label15 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.pbx_NegHELX = new System.Windows.Forms.PictureBox();
-            this.pbx_PosHELX = new System.Windows.Forms.PictureBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.pbx_EZX = new System.Windows.Forms.PictureBox();
-            this.pbx_PosHELY = new System.Windows.Forms.PictureBox();
-            this.pbx_NegHELY = new System.Windows.Forms.PictureBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.pbx_EZY = new System.Windows.Forms.PictureBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.pbx_PosHELZ = new System.Windows.Forms.PictureBox();
-            this.pbx_NegHELZ = new System.Windows.Forms.PictureBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.btn_GoHome = new System.Windows.Forms.Button();
             this.timer_HomeWait = new System.Windows.Forms.Timer(this.components);
             this.tcl_Window00.SuspendLayout();
             this.tp1_Test.SuspendLayout();
@@ -190,19 +199,19 @@ namespace _50
             ((System.ComponentModel.ISupportInitialize)(this.nud_MultipleMovePosition0)).BeginInit();
             this.gbx_MoveWay.SuspendLayout();
             this.gbx_MultipleAxisState.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_EZY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_EZX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_NegHELZ)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_NegHELY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_NegHELX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_PosHELZ)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_PosHELY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_PosHELX)).BeginInit();
             this.gbx_AxisState.SuspendLayout();
             this.gbx_SingleAxisControl.SuspendLayout();
             this.gbx_DeviceConnect.SuspendLayout();
             this.tp1_Heating.SuspendLayout();
             this.tp1_HlaconTest.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_NegHELX)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_PosHELX)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_EZX)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_PosHELY)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_NegHELY)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_EZY)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_PosHELZ)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_NegHELZ)).BeginInit();
             this.SuspendLayout();
             // 
             // tcl_Window00
@@ -213,12 +222,11 @@ namespace _50
             this.tcl_Window00.Location = new System.Drawing.Point(0, 0);
             this.tcl_Window00.Name = "tcl_Window00";
             this.tcl_Window00.SelectedIndex = 0;
-            this.tcl_Window00.Size = new System.Drawing.Size(887, 715);
+            this.tcl_Window00.Size = new System.Drawing.Size(887, 816);
             this.tcl_Window00.TabIndex = 0;
             // 
             // tp1_Test
             // 
-            this.tp1_Test.Controls.Add(this.btn_GoHome);
             this.tp1_Test.Controls.Add(this.gbx_Gcode);
             this.tp1_Test.Controls.Add(this.gbx_VelocitySet);
             this.tp1_Test.Controls.Add(this.gbx_MultipleAxisControl);
@@ -229,7 +237,7 @@ namespace _50
             this.tp1_Test.Controls.Add(this.gbx_DeviceConnect);
             this.tp1_Test.Location = new System.Drawing.Point(4, 22);
             this.tp1_Test.Name = "tp1_Test";
-            this.tp1_Test.Size = new System.Drawing.Size(879, 689);
+            this.tp1_Test.Size = new System.Drawing.Size(879, 790);
             this.tp1_Test.TabIndex = 0;
             this.tp1_Test.Text = "Test";
             this.tp1_Test.UseVisualStyleBackColor = true;
@@ -243,7 +251,7 @@ namespace _50
             this.gbx_Gcode.Controls.Add(this.btn_StartPrint);
             this.gbx_Gcode.Controls.Add(this.btn_OpenFile);
             this.gbx_Gcode.Controls.Add(this.dgv_Gcode);
-            this.gbx_Gcode.Location = new System.Drawing.Point(8, 321);
+            this.gbx_Gcode.Location = new System.Drawing.Point(8, 425);
             this.gbx_Gcode.Name = "gbx_Gcode";
             this.gbx_Gcode.Size = new System.Drawing.Size(868, 362);
             this.gbx_Gcode.TabIndex = 7;
@@ -332,7 +340,7 @@ namespace _50
             this.gbx_VelocitySet.Controls.Add(this.label3);
             this.gbx_VelocitySet.Controls.Add(this.txt_EVelHigh);
             this.gbx_VelocitySet.Controls.Add(this.label36);
-            this.gbx_VelocitySet.Location = new System.Drawing.Point(444, 121);
+            this.gbx_VelocitySet.Location = new System.Drawing.Point(444, 217);
             this.gbx_VelocitySet.Name = "gbx_VelocitySet";
             this.gbx_VelocitySet.Size = new System.Drawing.Size(224, 206);
             this.gbx_VelocitySet.TabIndex = 6;
@@ -353,7 +361,7 @@ namespace _50
             this.txt_EDec.Name = "txt_EDec";
             this.txt_EDec.Size = new System.Drawing.Size(53, 22);
             this.txt_EDec.TabIndex = 33;
-            this.txt_EDec.Text = "500";
+            this.txt_EDec.Text = "30";
             // 
             // label1
             // 
@@ -378,7 +386,7 @@ namespace _50
             this.txt_EAcc.Name = "txt_EAcc";
             this.txt_EAcc.Size = new System.Drawing.Size(57, 22);
             this.txt_EAcc.TabIndex = 32;
-            this.txt_EAcc.Text = "500";
+            this.txt_EAcc.Text = "30";
             // 
             // label2
             // 
@@ -440,7 +448,7 @@ namespace _50
             this.txt_EVelLow.Name = "txt_EVelLow";
             this.txt_EVelLow.Size = new System.Drawing.Size(53, 22);
             this.txt_EVelLow.TabIndex = 29;
-            this.txt_EVelLow.Text = "500";
+            this.txt_EVelLow.Text = "30";
             // 
             // label4
             // 
@@ -494,7 +502,7 @@ namespace _50
             this.txt_EVelHigh.Name = "txt_EVelHigh";
             this.txt_EVelHigh.Size = new System.Drawing.Size(57, 22);
             this.txt_EVelHigh.TabIndex = 27;
-            this.txt_EVelHigh.Text = "500";
+            this.txt_EVelHigh.Text = "30";
             // 
             // label36
             // 
@@ -507,6 +515,8 @@ namespace _50
             // 
             // gbx_MultipleAxisControl
             // 
+            this.gbx_MultipleAxisControl.Controls.Add(this.btn_SetCmd);
+            this.gbx_MultipleAxisControl.Controls.Add(this.btn_GoHome);
             this.gbx_MultipleAxisControl.Controls.Add(this.nud_MultipleMovePosition3);
             this.gbx_MultipleAxisControl.Controls.Add(this.nud_MultipleMovePosition2);
             this.gbx_MultipleAxisControl.Controls.Add(this.nud_MultipleMovePosition1);
@@ -522,12 +532,32 @@ namespace _50
             this.gbx_MultipleAxisControl.Controls.Add(this.cbx_AxisOpen1);
             this.gbx_MultipleAxisControl.Controls.Add(this.cbx_AxisOpen0);
             this.gbx_MultipleAxisControl.Controls.Add(this.btn_AxisMultipleMove);
-            this.gbx_MultipleAxisControl.Location = new System.Drawing.Point(214, 121);
+            this.gbx_MultipleAxisControl.Location = new System.Drawing.Point(214, 217);
             this.gbx_MultipleAxisControl.Name = "gbx_MultipleAxisControl";
             this.gbx_MultipleAxisControl.Size = new System.Drawing.Size(224, 206);
             this.gbx_MultipleAxisControl.TabIndex = 6;
             this.gbx_MultipleAxisControl.TabStop = false;
             this.gbx_MultipleAxisControl.Text = "MultipleAxisControl";
+            // 
+            // btn_SetCmd
+            // 
+            this.btn_SetCmd.Location = new System.Drawing.Point(62, 127);
+            this.btn_SetCmd.Name = "btn_SetCmd";
+            this.btn_SetCmd.Size = new System.Drawing.Size(75, 23);
+            this.btn_SetCmd.TabIndex = 5;
+            this.btn_SetCmd.Text = "SetCmd";
+            this.btn_SetCmd.UseVisualStyleBackColor = true;
+            this.btn_SetCmd.Click += new System.EventHandler(this.btn_SetCmd_Click);
+            // 
+            // btn_GoHome
+            // 
+            this.btn_GoHome.Location = new System.Drawing.Point(143, 127);
+            this.btn_GoHome.Name = "btn_GoHome";
+            this.btn_GoHome.Size = new System.Drawing.Size(75, 23);
+            this.btn_GoHome.TabIndex = 8;
+            this.btn_GoHome.Text = "GoHome";
+            this.btn_GoHome.UseVisualStyleBackColor = true;
+            this.btn_GoHome.Click += new System.EventHandler(this.btn_GoHome_Click);
             // 
             // nud_MultipleMovePosition3
             // 
@@ -545,11 +575,6 @@ namespace _50
             this.nud_MultipleMovePosition3.Name = "nud_MultipleMovePosition3";
             this.nud_MultipleMovePosition3.Size = new System.Drawing.Size(100, 22);
             this.nud_MultipleMovePosition3.TabIndex = 7;
-            this.nud_MultipleMovePosition3.Value = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
             // 
             // nud_MultipleMovePosition2
             // 
@@ -567,11 +592,6 @@ namespace _50
             this.nud_MultipleMovePosition2.Name = "nud_MultipleMovePosition2";
             this.nud_MultipleMovePosition2.Size = new System.Drawing.Size(100, 22);
             this.nud_MultipleMovePosition2.TabIndex = 7;
-            this.nud_MultipleMovePosition2.Value = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
             // 
             // nud_MultipleMovePosition1
             // 
@@ -589,11 +609,6 @@ namespace _50
             this.nud_MultipleMovePosition1.Name = "nud_MultipleMovePosition1";
             this.nud_MultipleMovePosition1.Size = new System.Drawing.Size(100, 22);
             this.nud_MultipleMovePosition1.TabIndex = 7;
-            this.nud_MultipleMovePosition1.Value = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
             // 
             // nud_MultipleMovePosition0
             // 
@@ -611,11 +626,6 @@ namespace _50
             this.nud_MultipleMovePosition0.Name = "nud_MultipleMovePosition0";
             this.nud_MultipleMovePosition0.Size = new System.Drawing.Size(100, 22);
             this.nud_MultipleMovePosition0.TabIndex = 7;
-            this.nud_MultipleMovePosition0.Value = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
             // 
             // ckb_Reverse
             // 
@@ -719,7 +729,7 @@ namespace _50
             // 
             this.gbx_MoveWay.Controls.Add(this.rbtn_Relatively);
             this.gbx_MoveWay.Controls.Add(this.rbtn_Asolute);
-            this.gbx_MoveWay.Location = new System.Drawing.Point(8, 115);
+            this.gbx_MoveWay.Location = new System.Drawing.Point(8, 217);
             this.gbx_MoveWay.Name = "gbx_MoveWay";
             this.gbx_MoveWay.Size = new System.Drawing.Size(200, 100);
             this.gbx_MoveWay.TabIndex = 5;
@@ -761,10 +771,13 @@ namespace _50
             this.gbx_MultipleAxisState.Controls.Add(this.pbx_EZY);
             this.gbx_MultipleAxisState.Controls.Add(this.pbx_EZX);
             this.gbx_MultipleAxisState.Controls.Add(this.lbl_StateZ);
-            this.gbx_MultipleAxisState.Controls.Add(this.txt_PositionE);
+            this.gbx_MultipleAxisState.Controls.Add(this.txt_CmdPositionE);
             this.gbx_MultipleAxisState.Controls.Add(this.label11);
             this.gbx_MultipleAxisState.Controls.Add(this.label7);
             this.gbx_MultipleAxisState.Controls.Add(this.pbx_NegHELZ);
+            this.gbx_MultipleAxisState.Controls.Add(this.label18);
+            this.gbx_MultipleAxisState.Controls.Add(this.label17);
+            this.gbx_MultipleAxisState.Controls.Add(this.label16);
             this.gbx_MultipleAxisState.Controls.Add(this.label14);
             this.gbx_MultipleAxisState.Controls.Add(this.pbx_NegHELY);
             this.gbx_MultipleAxisState.Controls.Add(this.lbl_StateY);
@@ -774,17 +787,39 @@ namespace _50
             this.gbx_MultipleAxisState.Controls.Add(this.pbx_PosHELY);
             this.gbx_MultipleAxisState.Controls.Add(this.lbl_StateX);
             this.gbx_MultipleAxisState.Controls.Add(this.pbx_PosHELX);
-            this.gbx_MultipleAxisState.Controls.Add(this.txt_PositionZ);
+            this.gbx_MultipleAxisState.Controls.Add(this.txt_CmdPositionZ);
             this.gbx_MultipleAxisState.Controls.Add(this.txt_StateY);
-            this.gbx_MultipleAxisState.Controls.Add(this.txt_PositionY);
+            this.gbx_MultipleAxisState.Controls.Add(this.txt_CmdPositionY);
             this.gbx_MultipleAxisState.Controls.Add(this.txt_StateX);
-            this.gbx_MultipleAxisState.Controls.Add(this.txt_PositionX);
+            this.gbx_MultipleAxisState.Controls.Add(this.txt_ActPositionE);
+            this.gbx_MultipleAxisState.Controls.Add(this.txt_ActPositionZ);
+            this.gbx_MultipleAxisState.Controls.Add(this.txt_ActPositionY);
+            this.gbx_MultipleAxisState.Controls.Add(this.txt_ActPositionX);
+            this.gbx_MultipleAxisState.Controls.Add(this.txt_CmdPositionX);
             this.gbx_MultipleAxisState.Location = new System.Drawing.Point(332, 3);
             this.gbx_MultipleAxisState.Name = "gbx_MultipleAxisState";
-            this.gbx_MultipleAxisState.Size = new System.Drawing.Size(436, 118);
+            this.gbx_MultipleAxisState.Size = new System.Drawing.Size(510, 208);
             this.gbx_MultipleAxisState.TabIndex = 1;
             this.gbx_MultipleAxisState.TabStop = false;
             this.gbx_MultipleAxisState.Text = "AxisState";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(127, 138);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(22, 12);
+            this.label10.TabIndex = 27;
+            this.label10.Text = "EZ:";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(21, 138);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(22, 12);
+            this.label12.TabIndex = 27;
+            this.label12.Text = "EZ:";
             // 
             // lbl_StateE
             // 
@@ -795,13 +830,60 @@ namespace _50
             this.lbl_StateE.TabIndex = 7;
             this.lbl_StateE.Text = "E";
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(221, 126);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(34, 12);
+            this.label13.TabIndex = 32;
+            this.label13.Text = "-HEL:";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(115, 126);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(34, 12);
+            this.label8.TabIndex = 32;
+            this.label8.Text = "-HEL:";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(9, 126);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(34, 12);
+            this.label15.TabIndex = 32;
+            this.label15.Text = "-HEL:";
+            // 
             // txt_StateE
             // 
-            this.txt_StateE.Location = new System.Drawing.Point(327, 54);
+            this.txt_StateE.Location = new System.Drawing.Point(325, 85);
             this.txt_StateE.Name = "txt_StateE";
             this.txt_StateE.ReadOnly = true;
             this.txt_StateE.Size = new System.Drawing.Size(100, 22);
             this.txt_StateE.TabIndex = 3;
+            // 
+            // pbx_EZY
+            // 
+            this.pbx_EZY.BackColor = System.Drawing.Color.Gray;
+            this.pbx_EZY.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pbx_EZY.Location = new System.Drawing.Point(155, 137);
+            this.pbx_EZY.Name = "pbx_EZY";
+            this.pbx_EZY.Size = new System.Drawing.Size(58, 11);
+            this.pbx_EZY.TabIndex = 26;
+            this.pbx_EZY.TabStop = false;
+            // 
+            // pbx_EZX
+            // 
+            this.pbx_EZX.BackColor = System.Drawing.Color.Gray;
+            this.pbx_EZX.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pbx_EZX.Location = new System.Drawing.Point(49, 137);
+            this.pbx_EZX.Name = "pbx_EZX";
+            this.pbx_EZX.Size = new System.Drawing.Size(58, 11);
+            this.pbx_EZX.TabIndex = 26;
+            this.pbx_EZX.TabStop = false;
             // 
             // lbl_StateZ
             // 
@@ -812,13 +894,87 @@ namespace _50
             this.lbl_StateZ.TabIndex = 7;
             this.lbl_StateZ.Text = "Z";
             // 
-            // txt_PositionE
+            // txt_CmdPositionE
             // 
-            this.txt_PositionE.Location = new System.Drawing.Point(327, 26);
-            this.txt_PositionE.Name = "txt_PositionE";
-            this.txt_PositionE.ReadOnly = true;
-            this.txt_PositionE.Size = new System.Drawing.Size(100, 22);
-            this.txt_PositionE.TabIndex = 3;
+            this.txt_CmdPositionE.Location = new System.Drawing.Point(325, 57);
+            this.txt_CmdPositionE.Name = "txt_CmdPositionE";
+            this.txt_CmdPositionE.ReadOnly = true;
+            this.txt_CmdPositionE.Size = new System.Drawing.Size(100, 22);
+            this.txt_CmdPositionE.TabIndex = 3;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(219, 114);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(36, 12);
+            this.label11.TabIndex = 31;
+            this.label11.Text = "+HEL:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(113, 114);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(36, 12);
+            this.label7.TabIndex = 31;
+            this.label7.Text = "+HEL:";
+            // 
+            // pbx_NegHELZ
+            // 
+            this.pbx_NegHELZ.BackColor = System.Drawing.Color.Gray;
+            this.pbx_NegHELZ.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pbx_NegHELZ.Location = new System.Drawing.Point(261, 125);
+            this.pbx_NegHELZ.Name = "pbx_NegHELZ";
+            this.pbx_NegHELZ.Size = new System.Drawing.Size(58, 11);
+            this.pbx_NegHELZ.TabIndex = 30;
+            this.pbx_NegHELZ.TabStop = false;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(431, 88);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(27, 12);
+            this.label18.TabIndex = 31;
+            this.label18.Text = "State";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(431, 60);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(65, 12);
+            this.label17.TabIndex = 31;
+            this.label17.Text = "CmdPosition";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(431, 32);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(72, 12);
+            this.label16.TabIndex = 31;
+            this.label16.Text = "ActualPosition";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(7, 114);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(36, 12);
+            this.label14.TabIndex = 31;
+            this.label14.Text = "+HEL:";
+            // 
+            // pbx_NegHELY
+            // 
+            this.pbx_NegHELY.BackColor = System.Drawing.Color.Gray;
+            this.pbx_NegHELY.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pbx_NegHELY.Location = new System.Drawing.Point(155, 125);
+            this.pbx_NegHELY.Name = "pbx_NegHELY";
+            this.pbx_NegHELY.Size = new System.Drawing.Size(58, 11);
+            this.pbx_NegHELY.TabIndex = 30;
+            this.pbx_NegHELY.TabStop = false;
             // 
             // lbl_StateY
             // 
@@ -829,13 +985,43 @@ namespace _50
             this.lbl_StateY.TabIndex = 7;
             this.lbl_StateY.Text = "Y";
             // 
+            // pbx_NegHELX
+            // 
+            this.pbx_NegHELX.BackColor = System.Drawing.Color.Gray;
+            this.pbx_NegHELX.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pbx_NegHELX.Location = new System.Drawing.Point(49, 125);
+            this.pbx_NegHELX.Name = "pbx_NegHELX";
+            this.pbx_NegHELX.Size = new System.Drawing.Size(58, 11);
+            this.pbx_NegHELX.TabIndex = 30;
+            this.pbx_NegHELX.TabStop = false;
+            // 
+            // pbx_PosHELZ
+            // 
+            this.pbx_PosHELZ.BackColor = System.Drawing.Color.Gray;
+            this.pbx_PosHELZ.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pbx_PosHELZ.Location = new System.Drawing.Point(261, 113);
+            this.pbx_PosHELZ.Name = "pbx_PosHELZ";
+            this.pbx_PosHELZ.Size = new System.Drawing.Size(58, 11);
+            this.pbx_PosHELZ.TabIndex = 29;
+            this.pbx_PosHELZ.TabStop = false;
+            // 
             // txt_StateZ
             // 
-            this.txt_StateZ.Location = new System.Drawing.Point(221, 54);
+            this.txt_StateZ.Location = new System.Drawing.Point(219, 85);
             this.txt_StateZ.Name = "txt_StateZ";
             this.txt_StateZ.ReadOnly = true;
             this.txt_StateZ.Size = new System.Drawing.Size(100, 22);
             this.txt_StateZ.TabIndex = 3;
+            // 
+            // pbx_PosHELY
+            // 
+            this.pbx_PosHELY.BackColor = System.Drawing.Color.Gray;
+            this.pbx_PosHELY.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pbx_PosHELY.Location = new System.Drawing.Point(155, 113);
+            this.pbx_PosHELY.Name = "pbx_PosHELY";
+            this.pbx_PosHELY.Size = new System.Drawing.Size(58, 11);
+            this.pbx_PosHELY.TabIndex = 29;
+            this.pbx_PosHELY.TabStop = false;
             // 
             // lbl_StateX
             // 
@@ -846,45 +1032,87 @@ namespace _50
             this.lbl_StateX.TabIndex = 7;
             this.lbl_StateX.Text = "X";
             // 
-            // txt_PositionZ
+            // pbx_PosHELX
             // 
-            this.txt_PositionZ.Location = new System.Drawing.Point(221, 26);
-            this.txt_PositionZ.Name = "txt_PositionZ";
-            this.txt_PositionZ.ReadOnly = true;
-            this.txt_PositionZ.Size = new System.Drawing.Size(100, 22);
-            this.txt_PositionZ.TabIndex = 3;
+            this.pbx_PosHELX.BackColor = System.Drawing.Color.Gray;
+            this.pbx_PosHELX.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pbx_PosHELX.Location = new System.Drawing.Point(49, 113);
+            this.pbx_PosHELX.Name = "pbx_PosHELX";
+            this.pbx_PosHELX.Size = new System.Drawing.Size(58, 11);
+            this.pbx_PosHELX.TabIndex = 29;
+            this.pbx_PosHELX.TabStop = false;
+            // 
+            // txt_CmdPositionZ
+            // 
+            this.txt_CmdPositionZ.Location = new System.Drawing.Point(219, 57);
+            this.txt_CmdPositionZ.Name = "txt_CmdPositionZ";
+            this.txt_CmdPositionZ.ReadOnly = true;
+            this.txt_CmdPositionZ.Size = new System.Drawing.Size(100, 22);
+            this.txt_CmdPositionZ.TabIndex = 3;
             // 
             // txt_StateY
             // 
-            this.txt_StateY.Location = new System.Drawing.Point(115, 54);
+            this.txt_StateY.Location = new System.Drawing.Point(113, 85);
             this.txt_StateY.Name = "txt_StateY";
             this.txt_StateY.ReadOnly = true;
             this.txt_StateY.Size = new System.Drawing.Size(100, 22);
             this.txt_StateY.TabIndex = 3;
             // 
-            // txt_PositionY
+            // txt_CmdPositionY
             // 
-            this.txt_PositionY.Location = new System.Drawing.Point(115, 26);
-            this.txt_PositionY.Name = "txt_PositionY";
-            this.txt_PositionY.ReadOnly = true;
-            this.txt_PositionY.Size = new System.Drawing.Size(100, 22);
-            this.txt_PositionY.TabIndex = 3;
+            this.txt_CmdPositionY.Location = new System.Drawing.Point(113, 57);
+            this.txt_CmdPositionY.Name = "txt_CmdPositionY";
+            this.txt_CmdPositionY.ReadOnly = true;
+            this.txt_CmdPositionY.Size = new System.Drawing.Size(100, 22);
+            this.txt_CmdPositionY.TabIndex = 3;
             // 
             // txt_StateX
             // 
-            this.txt_StateX.Location = new System.Drawing.Point(9, 54);
+            this.txt_StateX.Location = new System.Drawing.Point(7, 85);
             this.txt_StateX.Name = "txt_StateX";
             this.txt_StateX.ReadOnly = true;
             this.txt_StateX.Size = new System.Drawing.Size(100, 22);
             this.txt_StateX.TabIndex = 3;
             // 
-            // txt_PositionX
+            // txt_ActPositionE
             // 
-            this.txt_PositionX.Location = new System.Drawing.Point(9, 26);
-            this.txt_PositionX.Name = "txt_PositionX";
-            this.txt_PositionX.ReadOnly = true;
-            this.txt_PositionX.Size = new System.Drawing.Size(100, 22);
-            this.txt_PositionX.TabIndex = 3;
+            this.txt_ActPositionE.Location = new System.Drawing.Point(325, 29);
+            this.txt_ActPositionE.Name = "txt_ActPositionE";
+            this.txt_ActPositionE.ReadOnly = true;
+            this.txt_ActPositionE.Size = new System.Drawing.Size(100, 22);
+            this.txt_ActPositionE.TabIndex = 3;
+            // 
+            // txt_ActPositionZ
+            // 
+            this.txt_ActPositionZ.Location = new System.Drawing.Point(219, 29);
+            this.txt_ActPositionZ.Name = "txt_ActPositionZ";
+            this.txt_ActPositionZ.ReadOnly = true;
+            this.txt_ActPositionZ.Size = new System.Drawing.Size(100, 22);
+            this.txt_ActPositionZ.TabIndex = 3;
+            // 
+            // txt_ActPositionY
+            // 
+            this.txt_ActPositionY.Location = new System.Drawing.Point(113, 29);
+            this.txt_ActPositionY.Name = "txt_ActPositionY";
+            this.txt_ActPositionY.ReadOnly = true;
+            this.txt_ActPositionY.Size = new System.Drawing.Size(100, 22);
+            this.txt_ActPositionY.TabIndex = 3;
+            // 
+            // txt_ActPositionX
+            // 
+            this.txt_ActPositionX.Location = new System.Drawing.Point(7, 29);
+            this.txt_ActPositionX.Name = "txt_ActPositionX";
+            this.txt_ActPositionX.ReadOnly = true;
+            this.txt_ActPositionX.Size = new System.Drawing.Size(100, 22);
+            this.txt_ActPositionX.TabIndex = 3;
+            // 
+            // txt_CmdPositionX
+            // 
+            this.txt_CmdPositionX.Location = new System.Drawing.Point(7, 57);
+            this.txt_CmdPositionX.Name = "txt_CmdPositionX";
+            this.txt_CmdPositionX.ReadOnly = true;
+            this.txt_CmdPositionX.Size = new System.Drawing.Size(100, 22);
+            this.txt_CmdPositionX.TabIndex = 3;
             // 
             // gbx_AxisState
             // 
@@ -893,7 +1121,7 @@ namespace _50
             this.gbx_AxisState.Controls.Add(this.lbl_AxisState);
             this.gbx_AxisState.Location = new System.Drawing.Point(214, 3);
             this.gbx_AxisState.Name = "gbx_AxisState";
-            this.gbx_AxisState.Size = new System.Drawing.Size(112, 100);
+            this.gbx_AxisState.Size = new System.Drawing.Size(112, 118);
             this.gbx_AxisState.TabIndex = 1;
             this.gbx_AxisState.TabStop = false;
             this.gbx_AxisState.Text = "AxisState";
@@ -927,7 +1155,7 @@ namespace _50
             this.gbx_SingleAxisControl.Controls.Add(this.tbx_MovePosition);
             this.gbx_SingleAxisControl.Controls.Add(this.btn_AxisMove);
             this.gbx_SingleAxisControl.Controls.Add(this.cbx_AxisSelect);
-            this.gbx_SingleAxisControl.Location = new System.Drawing.Point(8, 221);
+            this.gbx_SingleAxisControl.Location = new System.Drawing.Point(8, 323);
             this.gbx_SingleAxisControl.Name = "gbx_SingleAxisControl";
             this.gbx_SingleAxisControl.Size = new System.Drawing.Size(200, 100);
             this.gbx_SingleAxisControl.TabIndex = 2;
@@ -979,7 +1207,7 @@ namespace _50
             this.gbx_DeviceConnect.Controls.Add(this.cbx_DeviceSelect);
             this.gbx_DeviceConnect.Location = new System.Drawing.Point(8, 3);
             this.gbx_DeviceConnect.Name = "gbx_DeviceConnect";
-            this.gbx_DeviceConnect.Size = new System.Drawing.Size(200, 100);
+            this.gbx_DeviceConnect.Size = new System.Drawing.Size(200, 118);
             this.gbx_DeviceConnect.TabIndex = 1;
             this.gbx_DeviceConnect.TabStop = false;
             this.gbx_DeviceConnect.Text = "Connection";
@@ -1040,7 +1268,7 @@ namespace _50
             this.tp1_Heating.Controls.Add(this.btn_HeatingTrigger);
             this.tp1_Heating.Location = new System.Drawing.Point(4, 22);
             this.tp1_Heating.Name = "tp1_Heating";
-            this.tp1_Heating.Size = new System.Drawing.Size(879, 689);
+            this.tp1_Heating.Size = new System.Drawing.Size(879, 790);
             this.tp1_Heating.TabIndex = 2;
             this.tp1_Heating.Text = "Heating";
             this.tp1_Heating.UseVisualStyleBackColor = true;
@@ -1088,7 +1316,7 @@ namespace _50
             this.tp1_HlaconTest.Controls.Add(this.hWindowControl1);
             this.tp1_HlaconTest.Location = new System.Drawing.Point(4, 22);
             this.tp1_HlaconTest.Name = "tp1_HlaconTest";
-            this.tp1_HlaconTest.Size = new System.Drawing.Size(879, 689);
+            this.tp1_HlaconTest.Size = new System.Drawing.Size(879, 790);
             this.tp1_HlaconTest.TabIndex = 1;
             this.tp1_HlaconTest.Text = "Hlacon-Test";
             this.tp1_HlaconTest.UseVisualStyleBackColor = true;
@@ -1143,168 +1371,6 @@ namespace _50
             this.timer_USB.Interval = 500;
             this.timer_USB.Tick += new System.EventHandler(this.timer_USB_Tick);
             // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(9, 91);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(34, 12);
-            this.label15.TabIndex = 32;
-            this.label15.Text = "-HEL:";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(7, 79);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(36, 12);
-            this.label14.TabIndex = 31;
-            this.label14.Text = "+HEL:";
-            // 
-            // pbx_NegHELX
-            // 
-            this.pbx_NegHELX.BackColor = System.Drawing.Color.Gray;
-            this.pbx_NegHELX.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pbx_NegHELX.Location = new System.Drawing.Point(49, 90);
-            this.pbx_NegHELX.Name = "pbx_NegHELX";
-            this.pbx_NegHELX.Size = new System.Drawing.Size(58, 11);
-            this.pbx_NegHELX.TabIndex = 30;
-            this.pbx_NegHELX.TabStop = false;
-            // 
-            // pbx_PosHELX
-            // 
-            this.pbx_PosHELX.BackColor = System.Drawing.Color.Gray;
-            this.pbx_PosHELX.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pbx_PosHELX.Location = new System.Drawing.Point(49, 78);
-            this.pbx_PosHELX.Name = "pbx_PosHELX";
-            this.pbx_PosHELX.Size = new System.Drawing.Size(58, 11);
-            this.pbx_PosHELX.TabIndex = 29;
-            this.pbx_PosHELX.TabStop = false;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(21, 103);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(22, 12);
-            this.label12.TabIndex = 27;
-            this.label12.Text = "EZ:";
-            // 
-            // pbx_EZX
-            // 
-            this.pbx_EZX.BackColor = System.Drawing.Color.Gray;
-            this.pbx_EZX.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pbx_EZX.Location = new System.Drawing.Point(49, 102);
-            this.pbx_EZX.Name = "pbx_EZX";
-            this.pbx_EZX.Size = new System.Drawing.Size(58, 11);
-            this.pbx_EZX.TabIndex = 26;
-            this.pbx_EZX.TabStop = false;
-            // 
-            // pbx_PosHELY
-            // 
-            this.pbx_PosHELY.BackColor = System.Drawing.Color.Gray;
-            this.pbx_PosHELY.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pbx_PosHELY.Location = new System.Drawing.Point(155, 78);
-            this.pbx_PosHELY.Name = "pbx_PosHELY";
-            this.pbx_PosHELY.Size = new System.Drawing.Size(58, 11);
-            this.pbx_PosHELY.TabIndex = 29;
-            this.pbx_PosHELY.TabStop = false;
-            // 
-            // pbx_NegHELY
-            // 
-            this.pbx_NegHELY.BackColor = System.Drawing.Color.Gray;
-            this.pbx_NegHELY.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pbx_NegHELY.Location = new System.Drawing.Point(155, 90);
-            this.pbx_NegHELY.Name = "pbx_NegHELY";
-            this.pbx_NegHELY.Size = new System.Drawing.Size(58, 11);
-            this.pbx_NegHELY.TabIndex = 30;
-            this.pbx_NegHELY.TabStop = false;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(113, 79);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(36, 12);
-            this.label7.TabIndex = 31;
-            this.label7.Text = "+HEL:";
-            // 
-            // pbx_EZY
-            // 
-            this.pbx_EZY.BackColor = System.Drawing.Color.Gray;
-            this.pbx_EZY.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pbx_EZY.Location = new System.Drawing.Point(155, 102);
-            this.pbx_EZY.Name = "pbx_EZY";
-            this.pbx_EZY.Size = new System.Drawing.Size(58, 11);
-            this.pbx_EZY.TabIndex = 26;
-            this.pbx_EZY.TabStop = false;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(115, 91);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(34, 12);
-            this.label8.TabIndex = 32;
-            this.label8.Text = "-HEL:";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(127, 103);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(22, 12);
-            this.label10.TabIndex = 27;
-            this.label10.Text = "EZ:";
-            // 
-            // pbx_PosHELZ
-            // 
-            this.pbx_PosHELZ.BackColor = System.Drawing.Color.Gray;
-            this.pbx_PosHELZ.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pbx_PosHELZ.Location = new System.Drawing.Point(261, 78);
-            this.pbx_PosHELZ.Name = "pbx_PosHELZ";
-            this.pbx_PosHELZ.Size = new System.Drawing.Size(58, 11);
-            this.pbx_PosHELZ.TabIndex = 29;
-            this.pbx_PosHELZ.TabStop = false;
-            // 
-            // pbx_NegHELZ
-            // 
-            this.pbx_NegHELZ.BackColor = System.Drawing.Color.Gray;
-            this.pbx_NegHELZ.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pbx_NegHELZ.Location = new System.Drawing.Point(261, 90);
-            this.pbx_NegHELZ.Name = "pbx_NegHELZ";
-            this.pbx_NegHELZ.Size = new System.Drawing.Size(58, 11);
-            this.pbx_NegHELZ.TabIndex = 30;
-            this.pbx_NegHELZ.TabStop = false;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(219, 79);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(36, 12);
-            this.label11.TabIndex = 31;
-            this.label11.Text = "+HEL:";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(221, 91);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(34, 12);
-            this.label13.TabIndex = 32;
-            this.label13.Text = "-HEL:";
-            // 
-            // btn_GoHome
-            // 
-            this.btn_GoHome.Location = new System.Drawing.Point(674, 127);
-            this.btn_GoHome.Name = "btn_GoHome";
-            this.btn_GoHome.Size = new System.Drawing.Size(75, 23);
-            this.btn_GoHome.TabIndex = 8;
-            this.btn_GoHome.Text = "GoHome";
-            this.btn_GoHome.UseVisualStyleBackColor = true;
-            this.btn_GoHome.Click += new System.EventHandler(this.btn_GoHome_Click);
-            // 
             // timer_HomeWait
             // 
             this.timer_HomeWait.Tick += new System.EventHandler(this.timer_HomeWait_Tick);
@@ -1313,7 +1379,7 @@ namespace _50
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(886, 717);
+            this.ClientSize = new System.Drawing.Size(886, 814);
             this.Controls.Add(this.tcl_Window00);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -1336,6 +1402,14 @@ namespace _50
             this.gbx_MoveWay.PerformLayout();
             this.gbx_MultipleAxisState.ResumeLayout(false);
             this.gbx_MultipleAxisState.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_EZY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_EZX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_NegHELZ)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_NegHELY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_NegHELX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_PosHELZ)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_PosHELY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbx_PosHELX)).EndInit();
             this.gbx_AxisState.ResumeLayout(false);
             this.gbx_AxisState.PerformLayout();
             this.gbx_SingleAxisControl.ResumeLayout(false);
@@ -1344,14 +1418,6 @@ namespace _50
             this.tp1_Heating.ResumeLayout(false);
             this.tp1_Heating.PerformLayout();
             this.tp1_HlaconTest.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_NegHELX)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_PosHELX)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_EZX)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_PosHELY)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_NegHELY)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_EZY)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_PosHELZ)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbx_NegHELZ)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1388,13 +1454,13 @@ namespace _50
         private System.Windows.Forms.TextBox cbx_AxisOpen0;
         private System.Windows.Forms.GroupBox gbx_MultipleAxisState;
         private System.Windows.Forms.TextBox txt_StateE;
-        private System.Windows.Forms.TextBox txt_PositionE;
+        private System.Windows.Forms.TextBox txt_CmdPositionE;
         private System.Windows.Forms.TextBox txt_StateZ;
-        private System.Windows.Forms.TextBox txt_PositionZ;
+        private System.Windows.Forms.TextBox txt_CmdPositionZ;
         private System.Windows.Forms.TextBox txt_StateY;
-        private System.Windows.Forms.TextBox txt_PositionY;
+        private System.Windows.Forms.TextBox txt_CmdPositionY;
         private System.Windows.Forms.TextBox txt_StateX;
-        private System.Windows.Forms.TextBox txt_PositionX;
+        private System.Windows.Forms.TextBox txt_CmdPositionX;
         private System.Windows.Forms.Label lbl_CtrlE;
         private System.Windows.Forms.Label lbl_CtrlZ;
         private System.Windows.Forms.Label lbl_CtrlY;
@@ -1468,6 +1534,14 @@ namespace _50
         private System.Windows.Forms.PictureBox pbx_PosHELZ;
         private System.Windows.Forms.Button btn_GoHome;
         private System.Windows.Forms.Timer timer_HomeWait;
+        private System.Windows.Forms.Button btn_SetCmd;
+        private System.Windows.Forms.TextBox txt_ActPositionE;
+        private System.Windows.Forms.TextBox txt_ActPositionZ;
+        private System.Windows.Forms.TextBox txt_ActPositionY;
+        private System.Windows.Forms.TextBox txt_ActPositionX;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label16;
     }
 }
 
