@@ -46,6 +46,29 @@ namespace _50
             
         }
 
+        void AllStop()
+        {
+            UInt16 AxState = new UInt16();
+            if (m_bInit)
+            {
+                for (int i = 0; i < m_ulAxisCount; i++)
+                {
+                    //if axis is in error state , reset it first. then Stop Axes
+                    Motion.mAcm_AxGetState(m_Axishand[i], ref AxState);
+                    if (AxState == (uint)AxisState.STA_AX_ERROR_STOP)
+                    { Motion.mAcm_AxResetError(m_Axishand[i]); }
+
+                    Motion.mAcm_AxStopDec(m_Axishand[i]);
+                }
+                Motion.mAcm_GpGetState(m_GpHand, ref AxState);
+                if (AxState == (uint)AxisState.STA_AX_ERROR_STOP)
+                { Motion.mAcm_GpResetError(m_GpHand); }
+
+                Motion.mAcm_GpStopDec(m_GpHand);
+            }
+            return;
+        }
+
         void KeyPosition()
         {
             for(int i = 0; i < m_ulAxisCount - 1; i++)
@@ -179,55 +202,6 @@ namespace _50
             if (Result != (uint)ErrorCode.SUCCESS)
             {
                 MessageBox.Show("Move Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Line", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            double par_VelHigh = VelHighE;
-            double par_VelLow = VelHighE;
-            double par_Acc = VelHighE;
-            double par_Dec = VelHighE;
-
-
-            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelHigh, ref par_VelHigh, (uint)Marshal.SizeOf(typeof(double)));
-            if (Result != (uint)ErrorCode.SUCCESS)
-            {
-                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelLow, ref par_VelLow, (uint)Marshal.SizeOf(typeof(double)));
-            if (Result != (uint)ErrorCode.SUCCESS)
-            {
-                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxAcc, ref par_Acc, (uint)Marshal.SizeOf(typeof(double)));
-            if (Result != (uint)ErrorCode.SUCCESS)
-            {
-                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxDec, ref par_Dec, (uint)Marshal.SizeOf(typeof(double)));
-            if (Result != (uint)ErrorCode.SUCCESS)
-            {
-                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (!Etrigger)
-                E = 0;
-
-            if (rbtn_Relatively.Checked)
-            {
-                Result = Motion.mAcm_AxMoveRel(m_Axishand[3], E);
-            }
-            else
-            {
-                Result = Motion.mAcm_AxMoveAbs(m_Axishand[3], E);
-            }
-
-            if (Result != (uint)ErrorCode.SUCCESS)
-            {
-                MessageBox.Show("PTP Move Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "PTP", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -1015,7 +989,60 @@ namespace _50
         private void btn_AxisMultipleMove_Click(object sender, EventArgs e)
         {
             KeyPosition();
+
             GroupMove();
+
+            UInt32 Result;
+            double par_VelHigh = VelHighE;
+            double par_VelLow = VelHighE;
+            double par_Acc = VelHighE;
+            double par_Dec = VelHighE;
+
+
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelHigh, ref par_VelHigh, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelLow, ref par_VelLow, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxAcc, ref par_Acc, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxDec, ref par_Dec, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!Etrigger)
+                E = 0;
+
+            if (rbtn_Relatively.Checked)
+            {
+                Result = Motion.mAcm_AxMoveRel(m_Axishand[3], E);
+            }
+            else
+            {
+                Result = Motion.mAcm_AxMoveAbs(m_Axishand[3], E);
+            }
+
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("PTP Move Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "PTP", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+
 
             /*
             double move0, move1, move2, move3;
@@ -1069,25 +1096,7 @@ namespace _50
 
         private void btn_AxisMultipleStop_Click(object sender, EventArgs e)
         {
-            UInt16 AxState = new UInt16();
-            if (m_bInit)
-            {
-                for (int i = 0; i < m_ulAxisCount; i++)
-                {
-                    //if axis is in error state , reset it first. then Stop Axes
-                    Motion.mAcm_AxGetState(m_Axishand[i], ref AxState);
-                    if (AxState == (uint)AxisState.STA_AX_ERROR_STOP)
-                    { Motion.mAcm_AxResetError(m_Axishand[i]); }
-
-                    Motion.mAcm_AxStopDec(m_Axishand[i]);
-                }
-                Motion.mAcm_GpGetState(m_GpHand, ref AxState);
-                if (AxState == (uint)AxisState.STA_AX_ERROR_STOP)
-                { Motion.mAcm_GpResetError(m_GpHand); }
-
-                Motion.mAcm_GpStopDec(m_GpHand);
-            }
-            return;
+            AllStop();
         }
 
         private void btn_SetVel_Click(object sender, EventArgs e)
@@ -1147,6 +1156,42 @@ namespace _50
         {
             if (m_bInit)
             {
+                if (Etrigger)
+                {
+                    UInt32 Result;
+                    double par_VelHigh = VelHighE;
+                    double par_VelLow = VelHighE;
+                    double par_Acc = VelHighE;
+                    double par_Dec = VelHighE;
+
+
+                    Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelHigh, ref par_VelHigh, (uint)Marshal.SizeOf(typeof(double)));
+                    if (Result != (uint)ErrorCode.SUCCESS)
+                    {
+                        MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelLow, ref par_VelLow, (uint)Marshal.SizeOf(typeof(double)));
+                    if (Result != (uint)ErrorCode.SUCCESS)
+                    {
+                        MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxAcc, ref par_Acc, (uint)Marshal.SizeOf(typeof(double)));
+                    if (Result != (uint)ErrorCode.SUCCESS)
+                    {
+                        MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxDec, ref par_Dec, (uint)Marshal.SizeOf(typeof(double)));
+                    if (Result != (uint)ErrorCode.SUCCESS)
+                    {
+                        MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    Motion.mAcm_AxMoveVel(m_Axishand[3], 0);
+                }
+
                 dgv_Gcode.CurrentCell = dgv_Gcode.Rows[0].Cells[0];//選擇第一行
 
                 currentGcode = 0;
@@ -1211,25 +1256,16 @@ namespace _50
                     }
                 }
 
-
-                //move3 = Convert.ToDouble(txt_E.Text);
-
-                /*if (txt_G.Text == "1")
-                    result = axis4.MoveVel(1);               //啟動E軸
-                else if (txt_G.Text == "0")
-                {
-                    result = axis4.StopDec();                //E軸停止
-                }*/
-
+                //準備移動
                 if (m_bInit)
                 {
                     if (txt_X.Text != "" && txt_Y.Text != "" && txt_Z.Text != "")   //判定有無效
                     {
 
                         //輸入位置                        
-                        Key[0] = Convert.ToDouble(txt_X.Text);
-                        Key[1] = Convert.ToDouble(txt_Y.Text);
-                        Key[2] = Convert.ToDouble(txt_Z.Text);
+                        Key[0] = Convert.ToDouble(txt_X.Text)*1000;
+                        Key[1] = Convert.ToDouble(txt_Y.Text)*1000;
+                        Key[2] = Convert.ToDouble(txt_Z.Text)*1000;
 
                         rbtn_Relatively.Checked = false;
                         rbtn_Asolute.Checked = true;
@@ -1258,6 +1294,50 @@ namespace _50
                 else
                 {
                     time_GcodeRead.Enabled = false;         //Gcode計時器關閉
+
+                    UInt16 AxState = new UInt16();
+                    Motion.mAcm_AxGetState(m_Axishand[3], ref AxState);
+                    if (AxState == (uint)AxisState.STA_AX_ERROR_STOP)
+                    { Motion.mAcm_AxResetError(m_Axishand[3]); }
+
+                    Motion.mAcm_AxStopDec(m_Axishand[3]);
+
+                    Vel = 4000;
+                    result = Motion.mAcm_SetProperty(m_Axishand[2], (uint)PropertyID.PAR_AxVelLow, ref Vel, (uint)Marshal.SizeOf(typeof(double)));
+                    if (result != (uint)ErrorCode.SUCCESS)
+                    {
+                        MessageBox.Show("Set Property-PAR_AxVelLow Failed With Error Code[0x" + Convert.ToString(result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    Vel = 12000;
+                    result = Motion.mAcm_SetProperty(m_Axishand[2], (uint)PropertyID.PAR_AxVelHigh, ref Vel, (uint)Marshal.SizeOf(typeof(double)));
+                    if (result != (uint)ErrorCode.SUCCESS)
+                    {
+                        MessageBox.Show("Set Property-PAR_AxVelHigh Failed With Error Code[0x" + Convert.ToString(result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    UInt32 PropertyVal = 1;
+                    result = Motion.mAcm_SetProperty(m_Axishand[2], (uint)PropertyID.PAR_AxHomeExSwitchMode, ref PropertyVal, (uint)Marshal.SizeOf(typeof(UInt32)));
+                    if (result != (uint)ErrorCode.SUCCESS)
+                    {
+                        MessageBox.Show("Set Property-PAR_AxHomeExSwitchMode Failed With Error Code[0x" + Convert.ToString(result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    double CrossDistance = 0;
+                    result = Motion.mAcm_SetProperty(m_Axishand[2], (uint)PropertyID.PAR_AxHomeCrossDistance, ref CrossDistance, (uint)Marshal.SizeOf(typeof(double)));
+                    if (result != (uint)ErrorCode.SUCCESS)
+                    {
+                        MessageBox.Show("Set Property-AxHomeCrossDistance Failed With Error Code[0x" + Convert.ToString(result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    UInt32 dir = 0;
+
+                    result = Motion.mAcm_AxHome(m_Axishand[2], (UInt32)1, dir);
+                    if (result != (uint)ErrorCode.SUCCESS)
+                    {
+                        MessageBox.Show("AxHome Failed With Error Code[0x" + Convert.ToString(result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
                 }
 
                 /*//Gcode最後一行判定
@@ -1544,6 +1624,49 @@ namespace _50
             {
                 Motion.mAcm_AxSetCmdPosition(m_Axishand[i], 0);
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            UInt32 Result;
+            double par_VelHigh = VelHighE;
+            double par_VelLow = VelHighE;
+            double par_Acc = VelHighE;
+            double par_Dec = VelHighE;
+
+
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelHigh, ref par_VelHigh, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelLow, ref par_VelLow, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxAcc, ref par_Acc, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxDec, ref par_Dec, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Motion.mAcm_AxMoveVel(m_Axishand[3],0);
+        }
+
+        private void btn_StopPrint_Click(object sender, EventArgs e)
+        {
+            time_GcodeRead.Enabled = false;
+
+            AllStop();
         }
     }
 }

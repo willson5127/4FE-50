@@ -71,7 +71,9 @@ namespace _50
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tcl_Window00 = new System.Windows.Forms.TabControl();
             this.tp1_Test = new System.Windows.Forms.TabPage();
+            this.button2 = new System.Windows.Forms.Button();
             this.gbx_Gcode = new System.Windows.Forms.GroupBox();
+            this.btn_StopPrint = new System.Windows.Forms.Button();
             this.txt_Z = new System.Windows.Forms.TextBox();
             this.txt_Y = new System.Windows.Forms.TextBox();
             this.txt_X = new System.Windows.Forms.TextBox();
@@ -227,6 +229,7 @@ namespace _50
             // 
             // tp1_Test
             // 
+            this.tp1_Test.Controls.Add(this.button2);
             this.tp1_Test.Controls.Add(this.gbx_Gcode);
             this.tp1_Test.Controls.Add(this.gbx_VelocitySet);
             this.tp1_Test.Controls.Add(this.gbx_MultipleAxisControl);
@@ -242,8 +245,19 @@ namespace _50
             this.tp1_Test.Text = "Test";
             this.tp1_Test.UseVisualStyleBackColor = true;
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(711, 286);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(88, 19);
+            this.button2.TabIndex = 8;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // gbx_Gcode
             // 
+            this.gbx_Gcode.Controls.Add(this.btn_StopPrint);
             this.gbx_Gcode.Controls.Add(this.txt_Z);
             this.gbx_Gcode.Controls.Add(this.txt_Y);
             this.gbx_Gcode.Controls.Add(this.txt_X);
@@ -257,6 +271,17 @@ namespace _50
             this.gbx_Gcode.TabIndex = 7;
             this.gbx_Gcode.TabStop = false;
             this.gbx_Gcode.Text = "Gcode";
+            // 
+            // btn_StopPrint
+            // 
+            this.btn_StopPrint.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.btn_StopPrint.Location = new System.Drawing.Point(0, 228);
+            this.btn_StopPrint.Name = "btn_StopPrint";
+            this.btn_StopPrint.Size = new System.Drawing.Size(200, 52);
+            this.btn_StopPrint.TabIndex = 11;
+            this.btn_StopPrint.Text = "StopPrint";
+            this.btn_StopPrint.UseVisualStyleBackColor = false;
+            this.btn_StopPrint.Click += new System.EventHandler(this.btn_StopPrint_Click);
             // 
             // txt_Z
             // 
@@ -353,7 +378,7 @@ namespace _50
             this.txt_Dec.Name = "txt_Dec";
             this.txt_Dec.Size = new System.Drawing.Size(53, 22);
             this.txt_Dec.TabIndex = 33;
-            this.txt_Dec.Text = "180000";
+            this.txt_Dec.Text = "10000";
             // 
             // txt_EDec
             // 
@@ -378,7 +403,7 @@ namespace _50
             this.txt_Acc.Name = "txt_Acc";
             this.txt_Acc.Size = new System.Drawing.Size(57, 22);
             this.txt_Acc.TabIndex = 32;
-            this.txt_Acc.Text = "160000";
+            this.txt_Acc.Text = "10000";
             // 
             // txt_EAcc
             // 
@@ -431,7 +456,7 @@ namespace _50
             this.txt_VelLow.Name = "txt_VelLow";
             this.txt_VelLow.Size = new System.Drawing.Size(53, 22);
             this.txt_VelLow.TabIndex = 29;
-            this.txt_VelLow.Text = "1000";
+            this.txt_VelLow.Text = "8000";
             // 
             // label5
             // 
@@ -475,7 +500,7 @@ namespace _50
             this.txt_VelHigh.Name = "txt_VelHigh";
             this.txt_VelHigh.Size = new System.Drawing.Size(57, 22);
             this.txt_VelHigh.TabIndex = 27;
-            this.txt_VelHigh.Text = "18000";
+            this.txt_VelHigh.Text = "8000";
             // 
             // label9
             // 
@@ -675,12 +700,13 @@ namespace _50
             // 
             // btn_AxisMultipleStop
             // 
+            this.btn_AxisMultipleStop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
             this.btn_AxisMultipleStop.Location = new System.Drawing.Point(103, 153);
             this.btn_AxisMultipleStop.Name = "btn_AxisMultipleStop";
             this.btn_AxisMultipleStop.Size = new System.Drawing.Size(115, 47);
             this.btn_AxisMultipleStop.TabIndex = 5;
             this.btn_AxisMultipleStop.Text = "Stop";
-            this.btn_AxisMultipleStop.UseVisualStyleBackColor = true;
+            this.btn_AxisMultipleStop.UseVisualStyleBackColor = false;
             this.btn_AxisMultipleStop.Click += new System.EventHandler(this.btn_AxisMultipleStop_Click);
             // 
             // cbx_AxisOpen3
@@ -1164,12 +1190,13 @@ namespace _50
             // 
             // btn_AxisStop
             // 
+            this.btn_AxisStop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
             this.btn_AxisStop.Location = new System.Drawing.Point(87, 47);
             this.btn_AxisStop.Name = "btn_AxisStop";
             this.btn_AxisStop.Size = new System.Drawing.Size(75, 23);
             this.btn_AxisStop.TabIndex = 5;
             this.btn_AxisStop.Text = "AxisStop";
-            this.btn_AxisStop.UseVisualStyleBackColor = true;
+            this.btn_AxisStop.UseVisualStyleBackColor = false;
             this.btn_AxisStop.Click += new System.EventHandler(this.btn_AxisStop_Click);
             // 
             // tbx_MovePosition
@@ -1542,6 +1569,8 @@ namespace _50
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btn_StopPrint;
     }
 }
 
