@@ -161,7 +161,7 @@ namespace _50
                 return;
             }
 
-            double par_GpVelHigh = Vel;
+            double par_GpVelHigh = VelHigh;
             double par_GpVelLow = VelLow;
             double par_GpAcc = Acc;
             double par_GpDec = Dec;
@@ -240,9 +240,9 @@ namespace _50
                 double mid = Math.Pow(x_k, 2) + Math.Pow(y_k, 2) + Math.Pow(z_k, 2);
                 double max_distance = Math.Sqrt(mid);                   //移動距離
 
-                par_VelHigh[0] = Vel * Math.Abs(x_k / max_distance);//照移動路徑設定X軸運行速度
-                par_VelHigh[1] = Vel * Math.Abs(y_k / max_distance);//照移動路徑設定Y軸運行速度
-                par_VelHigh[2] = Vel * Math.Abs(z_k / max_distance);//照移動路徑設定Z軸運行速度
+                par_VelHigh[0] = VelHigh * Math.Abs(x_k / max_distance);//照移動路徑設定X軸運行速度
+                par_VelHigh[1] = VelHigh * Math.Abs(y_k / max_distance);//照移動路徑設定Y軸運行速度
+                par_VelHigh[2] = VelHigh * Math.Abs(z_k / max_distance);//照移動路徑設定Z軸運行速度
                 par_VelHigh[3] = VelHighE;                               //照移動路徑設定E軸運行速度
 
                 par_VelLow[0] = VelLow;
@@ -1101,7 +1101,7 @@ namespace _50
 
         private void btn_SetVel_Click(object sender, EventArgs e)
         {
-            Vel = Convert.ToDouble(txt_VelHigh.Text);
+            VelHigh = Convert.ToDouble(txt_VelHigh.Text);
             VelLow = Convert.ToDouble(txt_VelLow.Text);
             Acc = Convert.ToDouble(txt_Acc.Text);
             Dec = Convert.ToDouble(txt_Dec.Text);
@@ -1189,7 +1189,7 @@ namespace _50
                         MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
-                    Motion.mAcm_AxMoveVel(m_Axishand[3], 0);
+                    Motion.mAcm_AxMoveVel(m_Axishand[3], 1);
                 }
 
                 dgv_Gcode.CurrentCell = dgv_Gcode.Rows[0].Cells[0];//選擇第一行
@@ -1295,49 +1295,8 @@ namespace _50
                 {
                     time_GcodeRead.Enabled = false;         //Gcode計時器關閉
 
-                    UInt16 AxState = new UInt16();
-                    Motion.mAcm_AxGetState(m_Axishand[3], ref AxState);
-                    if (AxState == (uint)AxisState.STA_AX_ERROR_STOP)
-                    { Motion.mAcm_AxResetError(m_Axishand[3]); }
+                    AllStop();                    
 
-                    Motion.mAcm_AxStopDec(m_Axishand[3]);
-
-                    Vel = 4000;
-                    result = Motion.mAcm_SetProperty(m_Axishand[2], (uint)PropertyID.PAR_AxVelLow, ref Vel, (uint)Marshal.SizeOf(typeof(double)));
-                    if (result != (uint)ErrorCode.SUCCESS)
-                    {
-                        MessageBox.Show("Set Property-PAR_AxVelLow Failed With Error Code[0x" + Convert.ToString(result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    Vel = 12000;
-                    result = Motion.mAcm_SetProperty(m_Axishand[2], (uint)PropertyID.PAR_AxVelHigh, ref Vel, (uint)Marshal.SizeOf(typeof(double)));
-                    if (result != (uint)ErrorCode.SUCCESS)
-                    {
-                        MessageBox.Show("Set Property-PAR_AxVelHigh Failed With Error Code[0x" + Convert.ToString(result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    UInt32 PropertyVal = 1;
-                    result = Motion.mAcm_SetProperty(m_Axishand[2], (uint)PropertyID.PAR_AxHomeExSwitchMode, ref PropertyVal, (uint)Marshal.SizeOf(typeof(UInt32)));
-                    if (result != (uint)ErrorCode.SUCCESS)
-                    {
-                        MessageBox.Show("Set Property-PAR_AxHomeExSwitchMode Failed With Error Code[0x" + Convert.ToString(result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    double CrossDistance = 0;
-                    result = Motion.mAcm_SetProperty(m_Axishand[2], (uint)PropertyID.PAR_AxHomeCrossDistance, ref CrossDistance, (uint)Marshal.SizeOf(typeof(double)));
-                    if (result != (uint)ErrorCode.SUCCESS)
-                    {
-                        MessageBox.Show("Set Property-AxHomeCrossDistance Failed With Error Code[0x" + Convert.ToString(result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    UInt32 dir = 0;
-
-                    result = Motion.mAcm_AxHome(m_Axishand[2], (UInt32)1, dir);
-                    if (result != (uint)ErrorCode.SUCCESS)
-                    {
-                        MessageBox.Show("AxHome Failed With Error Code[0x" + Convert.ToString(result, 16) + "]", "Home", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
                 }
 
                 /*//Gcode最後一行判定
@@ -1448,7 +1407,10 @@ namespace _50
                 instantAiCtrl1.Read(0, AI_count, AI_Data);
                 lb_USBHeating.Items.Add(AI_Data[0].ToString("0.000"));
             }
-            lbl_USBState2.Text = AI_Data[0].ToString("0.000");
+
+            double x = AI_Data[0];
+            double T = 2.3757 * Math.Pow(x, 5) - 25.289 * Math.Pow(x, 4) + 102.67 * Math.Pow(x, 3) - 196.67 * Math.Pow(x, 2) + 212.76 * x + 22.081;
+            lbl_USBState2.Text = T.ToString("0.000");
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -1592,7 +1554,7 @@ namespace _50
                         }
                         E = 0;
                     }
-                    Vel = 16000;
+                    VelHigh = 16000;
                     VelLow = 4000;
                     Acc = 8000;
                     Dec = 8000;
@@ -1659,7 +1621,7 @@ namespace _50
                 MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            Motion.mAcm_AxMoveVel(m_Axishand[3],0);
+            Motion.mAcm_AxMoveVel(m_Axishand[3],1);
         }
 
         private void btn_StopPrint_Click(object sender, EventArgs e)

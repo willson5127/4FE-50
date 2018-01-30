@@ -38,7 +38,7 @@ namespace _50
         double[] Key = new double[4];
         double E;
         bool Etrigger = false;
-        double Vel = 1000;
+        double VelHigh = 1000;
         double VelLow = 0;
         double Acc = 50;
         double Dec = 50;
