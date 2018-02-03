@@ -49,6 +49,41 @@ namespace _50
             
         }
 
+        void Emove()
+        {
+            UInt32 Result;
+            double par_VelHigh = VelHighE;
+            double par_VelLow = VelHighE;
+            double par_Acc = VelHighE;
+            double par_Dec = VelHighE;
+
+
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelHigh, ref par_VelHigh, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelLow, ref par_VelLow, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxAcc, ref par_Acc, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxDec, ref par_Dec, (uint)Marshal.SizeOf(typeof(double)));
+            if (Result != (uint)ErrorCode.SUCCESS)
+            {
+                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Motion.mAcm_AxMoveVel(m_Axishand[3], 1);
+        }
         void AllStop()
         {
             UInt16 AxState = new UInt16();
@@ -614,6 +649,8 @@ namespace _50
                     Motion.mAcm_AxGetCmdPosition(m_Axishand[i], ref CurCmd);
                     Motion.mAcm_AxGetActualPosition(m_Axishand[i], ref CurAct);
                     Motion.mAcm_AxGetState(m_Axishand[i], ref AxState);
+                    Cmdp[i] = CurCmd;
+                    Actp[i] = CurAct;
                     sp[i] = AxState;
                     switch (AxState)
                     {
@@ -1027,22 +1064,24 @@ namespace _50
                 return;
             }
 
-            if (!Etrigger)
-                E = 0;
+            if (Etrigger)
+            {
 
-            if (rbtn_Relatively.Checked)
-            {
-                Result = Motion.mAcm_AxMoveRel(m_Axishand[3], E);
-            }
-            else
-            {
-                Result = Motion.mAcm_AxMoveAbs(m_Axishand[3], E);
-            }
 
-            if (Result != (uint)ErrorCode.SUCCESS)
-            {
-                MessageBox.Show("PTP Move Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "PTP", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                if (rbtn_Relatively.Checked)
+                {
+                    Result = Motion.mAcm_AxMoveRel(m_Axishand[3], E);
+                }
+                else
+                {
+                    Result = Motion.mAcm_AxMoveAbs(m_Axishand[3], E);
+                }
+
+                if (Result != (uint)ErrorCode.SUCCESS)
+                {
+                    MessageBox.Show("PTP Move Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "PTP", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
             }
 
 
@@ -1159,42 +1198,7 @@ namespace _50
         {
             if (m_bInit)
             {
-                if (Etrigger)
-                {
-                    UInt32 Result;
-                    double par_VelHigh = VelHighE;
-                    double par_VelLow = VelHighE;
-                    double par_Acc = VelHighE;
-                    double par_Dec = VelHighE;
-
-
-                    Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelHigh, ref par_VelHigh, (uint)Marshal.SizeOf(typeof(double)));
-                    if (Result != (uint)ErrorCode.SUCCESS)
-                    {
-                        MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelLow, ref par_VelLow, (uint)Marshal.SizeOf(typeof(double)));
-                    if (Result != (uint)ErrorCode.SUCCESS)
-                    {
-                        MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxAcc, ref par_Acc, (uint)Marshal.SizeOf(typeof(double)));
-                    if (Result != (uint)ErrorCode.SUCCESS)
-                    {
-                        MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxDec, ref par_Dec, (uint)Marshal.SizeOf(typeof(double)));
-                    if (Result != (uint)ErrorCode.SUCCESS)
-                    {
-                        MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    Motion.mAcm_AxMoveVel(m_Axishand[3], 1);
-                }
-
+                
                 dgv_Gcode.CurrentCell = dgv_Gcode.Rows[0].Cells[0];//選擇第一行
 
                 currentGcode = 0;
@@ -1230,6 +1234,7 @@ namespace _50
                 //使用'Gcode'規則讀'dataGridView1'的程式碼到特定規則讀寫字串'm'
                 MatchCollection m = Gcode.Matches(dgv_Gcode.CurrentCell.Value.ToString());
 
+                dgv_Gcode.CurrentCell = dgv_Gcode.Rows[currentGcode].Cells[0];         //程式碼表選取該應選的行號
                 foreach (Match n in m)
                 {
                     string G;                              //宣告G變數
@@ -1271,13 +1276,21 @@ namespace _50
                 {
                     if (txt_X.Text != "" && txt_Y.Text != "" && txt_Z.Text != "" && txt_G.Text != "")    //判定有無效
                     {
-                        g = Convert.ToInt32(txt_G.Text);
-                        //輸入位置                        
-                        Key[0] = Convert.ToDouble(txt_X.Text)*1000;
-                        Key[1] = Convert.ToDouble(txt_Y.Text)*1000;
-                        Key[2] = Convert.ToDouble(txt_Z.Text)*1875;
-                        
-                        rbtn_Relatively.Checked = false;
+                        try
+                        {
+                            g = Convert.ToInt32(txt_G.Text);
+                            //輸入位置                        
+                            Key[0] = Convert.ToDouble(txt_X.Text) * 1000;
+                            Key[1] = Convert.ToDouble(txt_Y.Text) * 1000;
+                            Key[2] = Convert.ToDouble(txt_Z.Text) * 1875;
+                        }
+                        catch {
+                            g = 0;
+                            currentGcode++;
+                            dgv_Gcode.CurrentCell = dgv_Gcode.Rows[currentGcode].Cells[0];         //程式碼表選取該應選的行號
+                        }
+
+                            rbtn_Relatively.Checked = false;
                         rbtn_Asolute.Checked = true;
                         E = 0;
 
@@ -1292,18 +1305,21 @@ namespace _50
                         {
                             if (currentGcode != dgv_Gcode.RowCount - 1)
                             {
-                                if (g == 1)
+                                if (Etrigger)
                                 {
-                                    Motion.mAcm_AxMoveVel(m_Axishand[3], 1);
+                                    if (g == 1)
+                                    {
+                                        Emove();
+                                    }
+                                    else
+                                    {
+                                        Motion.mAcm_AxStopDec(m_Axishand[3]);
+                                    }
                                 }
-                                else
-                                {
-                                    Motion.mAcm_AxStopDec(m_Axishand[3]);
-                                }
+                                dgv_Gcode.CurrentCell = dgv_Gcode.Rows[currentGcode].Cells[0];         //程式碼表選取該應選的行號
                                 //移動軸
                                 GroupMove();
-                                currentGcode++;
-                                dgv_Gcode.CurrentCell = dgv_Gcode.Rows[currentGcode].Cells[0];         //程式碼表選取該應選的行號
+                                currentGcode++;                                
                             }
 
                         }
