@@ -386,7 +386,7 @@ namespace _50
             this.txt_EDec.Name = "txt_EDec";
             this.txt_EDec.Size = new System.Drawing.Size(53, 22);
             this.txt_EDec.TabIndex = 33;
-            this.txt_EDec.Text = "30";
+            this.txt_EDec.Text = "20";
             // 
             // label1
             // 
@@ -411,7 +411,7 @@ namespace _50
             this.txt_EAcc.Name = "txt_EAcc";
             this.txt_EAcc.Size = new System.Drawing.Size(57, 22);
             this.txt_EAcc.TabIndex = 32;
-            this.txt_EAcc.Text = "30";
+            this.txt_EAcc.Text = "20";
             // 
             // label2
             // 
@@ -473,7 +473,7 @@ namespace _50
             this.txt_EVelLow.Name = "txt_EVelLow";
             this.txt_EVelLow.Size = new System.Drawing.Size(53, 22);
             this.txt_EVelLow.TabIndex = 29;
-            this.txt_EVelLow.Text = "30";
+            this.txt_EVelLow.Text = "20";
             // 
             // label4
             // 
@@ -527,7 +527,7 @@ namespace _50
             this.txt_EVelHigh.Name = "txt_EVelHigh";
             this.txt_EVelHigh.Size = new System.Drawing.Size(57, 22);
             this.txt_EVelHigh.TabIndex = 27;
-            this.txt_EVelHigh.Text = "30";
+            this.txt_EVelHigh.Text = "20";
             // 
             // label36
             // 
@@ -1360,6 +1360,7 @@ namespace _50
             // 
             // hWindowControl1
             // 
+
             this.hWindowControl1.BackColor = System.Drawing.Color.Black;
             this.hWindowControl1.BorderColor = System.Drawing.Color.Black;
             this.hWindowControl1.ImagePart = new System.Drawing.Rectangle(0, 0, 640, 480);
@@ -1368,6 +1369,7 @@ namespace _50
             this.hWindowControl1.Size = new System.Drawing.Size(380, 291);
             this.hWindowControl1.TabIndex = 0;
             this.hWindowControl1.WindowSize = new System.Drawing.Size(380, 291);
+
             // 
             // time_State
             // 

@@ -13,3 +13,4 @@ C:\Users\Pro\Documents\Visual Studio 2015\Projects\50\50\bin\Debug\AdvGraph.dll
 C:\Users\Pro\Documents\Visual Studio 2015\Projects\50\50\bin\Debug\halcondotnet.dll
 C:\Users\Pro\Documents\Visual Studio 2015\Projects\50\50\bin\Debug\halcondotnet.xml
 C:\Users\Pro\Documents\Visual Studio 2015\Projects\50\50\bin\Debug\Automation.BDaq4.dll
+C:\Users\Pro\Documents\Visual Studio 2015\Projects\50\50\obj\Debug\50.csproj.CoreCompileInputs.cache

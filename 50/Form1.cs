@@ -18,6 +18,9 @@ using System.Runtime.InteropServices; //For Marshal
 using System.IO; // For commend "File"
 using System.Text.RegularExpressions; // For commend "Regex"
 
+
+//記得先將VisualStudio設定成管理員身分起動程式才可以正常運作
+
 namespace _50
 {
     public partial class Form1 : Form
@@ -1195,6 +1198,12 @@ namespace _50
                 dgv_Gcode.CurrentCell = dgv_Gcode.Rows[0].Cells[0];//選擇第一行
 
                 currentGcode = 0;
+
+                txt_G.Clear();
+                txt_X.Clear();
+                txt_Y.Clear();
+                txt_Z.Clear();
+
                 /*axis4.VelHigh = 3;
                 axis4.MoveVel(1);
 
@@ -1213,6 +1222,7 @@ namespace _50
         {
             if (currentGcode != dgv_Gcode.RowCount - 1)
             {
+                int g;
                 UInt16 GpState = new UInt16();
                 UInt32 result;                                                          //宣告讀取碼對照組
                                                                                         //以區分大小寫形式宣告Gcode讀寫規則
@@ -1259,14 +1269,14 @@ namespace _50
                 //準備移動
                 if (m_bInit)
                 {
-                    if (txt_X.Text != "" && txt_Y.Text != "" && txt_Z.Text != "")   //判定有無效
+                    if (txt_X.Text != "" && txt_Y.Text != "" && txt_Z.Text != "" && txt_G.Text != "")    //判定有無效
                     {
-
+                        g = Convert.ToInt32(txt_G.Text);
                         //輸入位置                        
                         Key[0] = Convert.ToDouble(txt_X.Text)*1000;
                         Key[1] = Convert.ToDouble(txt_Y.Text)*1000;
-                        Key[2] = Convert.ToDouble(txt_Z.Text)*1000;
-
+                        Key[2] = Convert.ToDouble(txt_Z.Text)*1875;
+                        
                         rbtn_Relatively.Checked = false;
                         rbtn_Asolute.Checked = true;
                         E = 0;
@@ -1282,6 +1292,14 @@ namespace _50
                         {
                             if (currentGcode != dgv_Gcode.RowCount - 1)
                             {
+                                if (g == 1)
+                                {
+                                    Motion.mAcm_AxMoveVel(m_Axishand[3], 1);
+                                }
+                                else
+                                {
+                                    Motion.mAcm_AxStopDec(m_Axishand[3]);
+                                }
                                 //移動軸
                                 GroupMove();
                                 currentGcode++;
@@ -1290,14 +1308,14 @@ namespace _50
 
                         }
                     }
-                }
-                else
-                {
-                    time_GcodeRead.Enabled = false;         //Gcode計時器關閉
+                    else
+                    {
+                        currentGcode++;
+                        dgv_Gcode.CurrentCell = dgv_Gcode.Rows[currentGcode].Cells[0];         //程式碼表選取該應選的行號
 
-                    AllStop();                    
-
+                    }
                 }
+                
 
                 /*//Gcode最後一行判定
                 if (currentGcode != dgv_Gcode.RowCount - 1)
@@ -1326,6 +1344,25 @@ namespace _50
                                                             axis4.StopDec();                //E軸停止
                                                             //MultipleMove(0, 0, 10000, 0);           //相對上升Z 10000
                 }*/
+            }
+            else
+            {
+                if (sp[0] == (UInt16)AxisState.STA_AX_READY && sp[1] == (UInt16)AxisState.STA_AX_READY && sp[2] == (UInt16)AxisState.STA_AX_READY)
+                {
+                    AllStop();
+
+                    rbtn_Relatively.Checked = true;
+                    rbtn_Asolute.Checked = false;
+                    ckb_Reverse.Checked = false;
+
+                    Key[0] = 0;
+                    Key[1] = 0;
+                    Key[2] = 10000;
+                    E = 0;
+                    GroupMove();
+
+                    time_GcodeRead.Enabled = false;         //Gcode計時器關閉                    
+                }
             }
         }
 
@@ -1415,6 +1452,8 @@ namespace _50
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
+            
             //自動輸入與找尋軸卡程式
 
             //宣告(全域宣告在Form1.Designer.cs之末端)
