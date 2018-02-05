@@ -1365,6 +1365,11 @@ namespace _50
             {
                 if (sp[0] == (UInt16)AxisState.STA_AX_READY && sp[1] == (UInt16)AxisState.STA_AX_READY && sp[2] == (UInt16)AxisState.STA_AX_READY)
                 {
+                    timer_USB.Enabled = false;
+                    Etrigger = false;
+                    DO_port = 0;
+                    instantDoCtrl1.Write(0, DO_port);
+
                     AllStop();
 
                     rbtn_Relatively.Checked = true;
@@ -1434,12 +1439,12 @@ namespace _50
 
         private void timer_USB_Tick(object sender, EventArgs e)
         {
-            if (Convert.ToDouble(AI_Data[0]) < 2.9)                     //當小於2.9V時啟動加熱器
+            if (Convert.ToDouble(AI_Data[0]) < 3.4)                     //當小於2.9V時啟動加熱器
             {
                 DO_port = 1;                        //數位輸出腳位0號
                 instantDoCtrl1.Write(0, DO_port);
             }
-            else if (Convert.ToDouble(AI_Data[0]) >= 2.9)               //當大於等於2.9V時關閉加熱器
+            else if (Convert.ToDouble(AI_Data[0]) >= 3.4)               //當大於等於2.9V時關閉加熱器
             {
                 DO_port = 0;
                 instantDoCtrl1.Write(0, DO_port);
