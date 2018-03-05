@@ -1389,8 +1389,9 @@ namespace _50
 
         //halcon測試
         int HA = 0;
+
         private HWindow window_A;
-        private HFramegrabber framegrabber_A;
+        HTuple hv_AcqHandle = null;
         private HImage image_A;
 
         private void button1_Click(object sender, EventArgs e)
@@ -1399,18 +1400,27 @@ namespace _50
             {
                 window_A = hWindowControl1.HalconWindow;
 
-                framegrabber_A = new HFramegrabber("GigEVision", 0, 0, 0, 0, 0, 0, "default", -1,
-        "default", -1, "false", "default", "0030531de0c2_Basler_acA192050gm", 0, -1);
+                HOperatorSet.OpenFramegrabber("GigEVision", 0, 0, 0, 0, 0, 0, "default", -1,
+    "default", new HTuple("GtlForceIP=0030531de0c2,169.254.0.82/16"), "false",
+    "default", "0030531de0c2_Basler_acA192050gm", 0, -1, out hv_AcqHandle);
 
-                framegrabber_A.GrabImageStart(-1);
-                image_A = framegrabber_A.GrabImage();
-                image_A.DispObj(window_A);
+                timer_Video.Enabled = true;
                 //pictureBox1.Image = framegrabber_A.GrabImage();
+
+                btn_OpenCamera.BackColor = Color.FromArgb(255, 192, 192);
+                btn_OpenCamera.Text = "CloseCamera";
                 HA = 1;
             }
-            image_A = framegrabber_A.GrabImage();
-            image_A.DispObj(window_A);
+            else
+            {
+                timer_Video.Enabled = false;
+                window_A.ClearWindow();
+                HOperatorSet.CloseFramegrabber(hv_AcqHandle);
 
+                btn_OpenCamera.BackColor = Color.FromArgb(192, 255, 192);
+                btn_OpenCamera.Text = "OpenCamera";
+                HA = 0;
+            }
         }
 
         //USB-4716
@@ -1689,6 +1699,138 @@ namespace _50
             time_GcodeRead.Enabled = false;
 
             AllStop();
+        }
+
+        HObject ho_Image;
+        private void timer1_Tick_1(object sender, EventArgs e)
+        {
+            HOperatorSet.GrabImageStart(hv_AcqHandle, -1);
+            HOperatorSet.GrabImageAsync(out ho_Image, hv_AcqHandle, -1);
+            ho_Image.DispObj(window_A);
+        }
+
+        HTuple hv_distenceX = null, hv_distenceY = null, hv_distence = null;
+        private void btn_FindCenter_Click(object sender, EventArgs e)
+        {
+            timer_Video.Enabled = false;
+
+            // Local iconic variables 
+
+            HObject center_Image, ho_imgGauss, ho_ImageEmphasize;
+            HObject ho_Region, ho_ClosedEdges, ho_ConnectedRegions;
+            HObject ho_SelectedRegions, ho_Rectangle, ho_Cross, ho_Arrow;
+
+            // Local control variables 
+
+            HTuple hv_Row1 = null;
+            HTuple hv_Column1 = null, hv_Row2 = null, hv_Column2 = null;
+            HTuple hv_Row = null, hv_Column = null, hv_distenceX = null;
+
+            // Initialize local and output iconic variables 
+            HOperatorSet.GenEmptyObj(out center_Image);
+            HOperatorSet.GenEmptyObj(out ho_imgGauss);
+            HOperatorSet.GenEmptyObj(out ho_ImageEmphasize);
+            HOperatorSet.GenEmptyObj(out ho_Region);
+            HOperatorSet.GenEmptyObj(out ho_ClosedEdges);
+            HOperatorSet.GenEmptyObj(out ho_ConnectedRegions);
+            HOperatorSet.GenEmptyObj(out ho_SelectedRegions);
+            HOperatorSet.GenEmptyObj(out ho_Rectangle);
+            HOperatorSet.GenEmptyObj(out ho_Cross);
+            HOperatorSet.GenEmptyObj(out ho_Arrow);
+
+            HOperatorSet.GrabImageAsync(out center_Image, hv_AcqHandle, -1);
+
+            ho_imgGauss.Dispose();
+            HOperatorSet.GaussFilter(ho_Image, out ho_imgGauss, 5);
+            ho_ImageEmphasize.Dispose();
+            HOperatorSet.Emphasize(ho_imgGauss, out ho_ImageEmphasize, 7, 7, 2);
+            ho_Region.Dispose();
+            HOperatorSet.FastThreshold(ho_ImageEmphasize, out ho_Region, 0, 175, 100);
+            ho_ClosedEdges.Dispose();
+            HOperatorSet.CloseEdgesLength(ho_Region, ho_Image, out ho_ClosedEdges, 12, 3);
+
+            //ho_Region.DispObj(window_A);
+            ho_ConnectedRegions.Dispose();
+            HOperatorSet.Connection(ho_ClosedEdges, out ho_ConnectedRegions);
+            ho_SelectedRegions.Dispose();
+            HOperatorSet.SelectShape(ho_ConnectedRegions, out ho_SelectedRegions, "area",
+                "and", 4000, 999999999);
+            HOperatorSet.SmallestRectangle1(ho_SelectedRegions, out hv_Row1, out hv_Column1,
+                out hv_Row2, out hv_Column2);
+            //Display settings
+            if (HDevWindowStack.IsOpen())
+            {
+                HOperatorSet.SetColor(HDevWindowStack.GetActive(), "green");
+            }
+            if (HDevWindowStack.IsOpen())
+            {
+                HOperatorSet.SetDraw(HDevWindowStack.GetActive(), "margin");
+            }
+            if (HDevWindowStack.IsOpen())
+            {
+                HOperatorSet.SetLineWidth(HDevWindowStack.GetActive(), 3);
+            }
+
+
+
+            ho_Rectangle.Dispose();
+            HOperatorSet.GenRectangle1(out ho_Rectangle, hv_Row1, hv_Column1, hv_Row2, hv_Column2);
+            //fit_circle_contour_xld (SelectedRegions, 'algebraic', -1, 0, 0, 3, 2, Row, Column, Radius, StartPhi, EndPhi, PointOrder)
+
+
+
+            hv_Row = ((hv_Row2 - hv_Row1) / 2) + hv_Row1;
+            hv_Column = ((hv_Column2 - hv_Column1) / 2) + hv_Column1;
+            ho_Cross.Dispose();
+            HOperatorSet.GenCrossContourXld(out ho_Cross, hv_Row, hv_Column, 50, 3.14 / 4);
+            if (HDevWindowStack.IsOpen())
+            {
+                HOperatorSet.SetColor(HDevWindowStack.GetActive(), "blue");
+            }
+            window_A.SetLineWidth(3);
+            window_A.SetColor("red");
+            ho_Cross.DispObj(window_A);
+
+            ho_Cross.Dispose();
+            HOperatorSet.GenCrossContourXld(out ho_Cross, 1200 / 2, 1920 / 2, 50, 3.14 / 4);
+            if (HDevWindowStack.IsOpen())
+            {
+                HOperatorSet.SetColor(HDevWindowStack.GetActive(), "dim gray");
+            }
+
+            window_A.SetColor("green");
+            ho_Cross.DispObj(window_A);
+
+            ho_Arrow.Dispose();
+            
+            hv_distenceX = (1920 / 2) - hv_Column;
+            hv_distenceY = hv_Row - (1200 / 2);
+            hv_distence = (((hv_distenceY.TuplePow(2)) + (hv_distenceX.TuplePow(2)))).TupleSqrt();
+
+            textBox1.Text = "" + hv_distenceX * 0.049261;
+            textBox2.Text = "" + hv_distenceY * 0.049261;
+            textBox3.Text = "" + hv_distence * 0.049261;
+
+            ho_Image.Dispose();
+            ho_imgGauss.Dispose();
+            ho_ImageEmphasize.Dispose();
+            ho_Region.Dispose();
+            ho_ClosedEdges.Dispose();
+            ho_ConnectedRegions.Dispose();
+            ho_SelectedRegions.Dispose();
+            ho_Rectangle.Dispose();
+            ho_Cross.Dispose();
+            ho_Arrow.Dispose();
+        }
+
+        //測試用
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            Key[0] = Convert.ToDouble(textBox1.Text) * 1000;
+            Key[1] = Convert.ToDouble(textBox2.Text) * 1000;
+            Key[2] = 0;
+
+            GroupMove();
         }
     }
 }

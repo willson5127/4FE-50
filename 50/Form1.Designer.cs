@@ -181,7 +181,8 @@ namespace _50
             this.lb_USBHeating = new System.Windows.Forms.ListBox();
             this.btn_HeatingTrigger = new System.Windows.Forms.Button();
             this.tp1_HlaconTest = new System.Windows.Forms.TabPage();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btn_FindCenter = new System.Windows.Forms.Button();
+            this.btn_OpenCamera = new System.Windows.Forms.Button();
             this.hWindowControl1 = new HalconDotNet.HWindowControl();
             this.time_State = new System.Windows.Forms.Timer(this.components);
             this.ofd_LoadConfigFile = new System.Windows.Forms.OpenFileDialog();
@@ -191,6 +192,11 @@ namespace _50
             this.instantAiCtrl1 = new Automation.BDaq.InstantAiCtrl(this.components);
             this.timer_USB = new System.Windows.Forms.Timer(this.components);
             this.timer_HomeWait = new System.Windows.Forms.Timer(this.components);
+            this.timer_Video = new System.Windows.Forms.Timer(this.components);
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.tcl_Window00.SuspendLayout();
             this.tp1_Test.SuspendLayout();
             this.gbx_Gcode.SuspendLayout();
@@ -1342,6 +1348,11 @@ namespace _50
             // tp1_HlaconTest
             // 
             this.tp1_HlaconTest.Controls.Add(this.button1);
+            this.tp1_HlaconTest.Controls.Add(this.textBox3);
+            this.tp1_HlaconTest.Controls.Add(this.textBox2);
+            this.tp1_HlaconTest.Controls.Add(this.textBox1);
+            this.tp1_HlaconTest.Controls.Add(this.btn_FindCenter);
+            this.tp1_HlaconTest.Controls.Add(this.btn_OpenCamera);
             this.tp1_HlaconTest.Controls.Add(this.hWindowControl1);
             this.tp1_HlaconTest.Location = new System.Drawing.Point(4, 22);
             this.tp1_HlaconTest.Name = "tp1_HlaconTest";
@@ -1350,26 +1361,37 @@ namespace _50
             this.tp1_HlaconTest.Text = "Hlacon-Test";
             this.tp1_HlaconTest.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // btn_FindCenter
             // 
-            this.button1.Location = new System.Drawing.Point(394, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(336, 85);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btn_FindCenter.Location = new System.Drawing.Point(3, 374);
+            this.btn_FindCenter.Name = "btn_FindCenter";
+            this.btn_FindCenter.Size = new System.Drawing.Size(75, 23);
+            this.btn_FindCenter.TabIndex = 2;
+            this.btn_FindCenter.Text = "Find Center";
+            this.btn_FindCenter.UseVisualStyleBackColor = true;
+            this.btn_FindCenter.Click += new System.EventHandler(this.btn_FindCenter_Click);
+            // 
+            // btn_OpenCamera
+            // 
+            this.btn_OpenCamera.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.btn_OpenCamera.Location = new System.Drawing.Point(3, 309);
+            this.btn_OpenCamera.Name = "btn_OpenCamera";
+            this.btn_OpenCamera.Size = new System.Drawing.Size(480, 59);
+            this.btn_OpenCamera.TabIndex = 1;
+            this.btn_OpenCamera.Text = "Open Camera";
+            this.btn_OpenCamera.UseVisualStyleBackColor = false;
+            this.btn_OpenCamera.Click += new System.EventHandler(this.button1_Click);
             // 
             // hWindowControl1
             // 
             this.hWindowControl1.BackColor = System.Drawing.Color.Black;
             this.hWindowControl1.BorderColor = System.Drawing.Color.Black;
-            this.hWindowControl1.ImagePart = new System.Drawing.Rectangle(0, 0, 640, 480);
-            this.hWindowControl1.Location = new System.Drawing.Point(8, 3);
+            this.hWindowControl1.ImagePart = new System.Drawing.Rectangle(0, 0, 1920, 1200);
+            this.hWindowControl1.Location = new System.Drawing.Point(3, 3);
             this.hWindowControl1.Name = "hWindowControl1";
-            this.hWindowControl1.Size = new System.Drawing.Size(380, 291);
+            this.hWindowControl1.Size = new System.Drawing.Size(480, 300);
             this.hWindowControl1.TabIndex = 0;
-            this.hWindowControl1.WindowSize = new System.Drawing.Size(380, 291);
+            this.hWindowControl1.WindowSize = new System.Drawing.Size(480, 300);
             // 
             // time_State
             // 
@@ -1403,6 +1425,41 @@ namespace _50
             // timer_HomeWait
             // 
             this.timer_HomeWait.Tick += new System.EventHandler(this.timer_HomeWait_Tick);
+            // 
+            // timer_Video
+            // 
+            this.timer_Video.Tick += new System.EventHandler(this.timer1_Tick_1);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(84, 376);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 22);
+            this.textBox1.TabIndex = 3;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(190, 376);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(100, 22);
+            this.textBox2.TabIndex = 3;
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(8, 404);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(100, 22);
+            this.textBox3.TabIndex = 3;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(114, 404);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 4;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // Form1
             // 
@@ -1447,6 +1504,7 @@ namespace _50
             this.tp1_Heating.ResumeLayout(false);
             this.tp1_Heating.PerformLayout();
             this.tp1_HlaconTest.ResumeLayout(false);
+            this.tp1_HlaconTest.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1513,7 +1571,7 @@ namespace _50
         private System.Windows.Forms.OpenFileDialog ofd_Gcode;
         private System.Windows.Forms.Timer time_GcodeRead;
         private System.Windows.Forms.TabPage tp1_HlaconTest;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btn_OpenCamera;
         private HalconDotNet.HWindowControl hWindowControl1;
         private System.Windows.Forms.TabPage tp1_Heating;
         private System.Windows.Forms.Label lbl_USBState;
@@ -1573,6 +1631,12 @@ namespace _50
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button btn_StopPrint;
+        private System.Windows.Forms.Timer timer_Video;
+        private System.Windows.Forms.Button btn_FindCenter;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button button1;
     }
 }
 
