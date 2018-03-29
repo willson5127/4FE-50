@@ -14,6 +14,7 @@ using Automation;              //USB-4716
 
 using HalconDotNet; //hlacon
 
+using System.Diagnostics; //程式運算計時
 using System.Runtime.InteropServices; //For Marshal
 using System.IO; // For commend "File"
 using System.Text.RegularExpressions; // For commend "Regex"
@@ -25,6 +26,12 @@ namespace _50
 {
     public partial class Form1 : Form
     {
+
+        AppSettings appset = new AppSettings();
+        string stl_file;
+        Slices slices;
+        Gcode gcode;
+
         public Form1()
         {
             InitializeComponent();
@@ -1484,7 +1491,9 @@ namespace _50
         private void Form1_Load(object sender, EventArgs e)
         {
 
-            
+            //初始化STL設定
+            propertyGrid1.SelectedObject = appset;
+
             //自動輸入與找尋軸卡程式
 
             //宣告(全域宣告在Form1.Designer.cs之末端)
@@ -1660,38 +1669,38 @@ namespace _50
 
         private void button2_Click(object sender, EventArgs e)
         {
-            UInt32 Result;
-            double par_VelHigh = VelHighE;
-            double par_VelLow = VelHighE;
-            double par_Acc = VelHighE;
-            double par_Dec = VelHighE;
+            //UInt32 Result;
+            //double par_VelHigh = VelHighE;
+            //double par_VelLow = VelHighE;
+            //double par_Acc = VelHighE;
+            //double par_Dec = VelHighE;
 
 
-            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelHigh, ref par_VelHigh, (uint)Marshal.SizeOf(typeof(double)));
-            if (Result != (uint)ErrorCode.SUCCESS)
-            {
-                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelLow, ref par_VelLow, (uint)Marshal.SizeOf(typeof(double)));
-            if (Result != (uint)ErrorCode.SUCCESS)
-            {
-                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxAcc, ref par_Acc, (uint)Marshal.SizeOf(typeof(double)));
-            if (Result != (uint)ErrorCode.SUCCESS)
-            {
-                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxDec, ref par_Dec, (uint)Marshal.SizeOf(typeof(double)));
-            if (Result != (uint)ErrorCode.SUCCESS)
-            {
-                MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            Motion.mAcm_AxMoveVel(m_Axishand[3],1);
+            //Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelHigh, ref par_VelHigh, (uint)Marshal.SizeOf(typeof(double)));
+            //if (Result != (uint)ErrorCode.SUCCESS)
+            //{
+            //    MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    return;
+            //}
+            //Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxVelLow, ref par_VelLow, (uint)Marshal.SizeOf(typeof(double)));
+            //if (Result != (uint)ErrorCode.SUCCESS)
+            //{
+            //    MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    return;
+            //}
+            //Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxAcc, ref par_Acc, (uint)Marshal.SizeOf(typeof(double)));
+            //if (Result != (uint)ErrorCode.SUCCESS)
+            //{
+            //    MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    return;
+            //}
+            //Result = Motion.mAcm_SetProperty(m_Axishand[3], (uint)PropertyID.PAR_AxDec, ref par_Dec, (uint)Marshal.SizeOf(typeof(double)));
+            //if (Result != (uint)ErrorCode.SUCCESS)
+            //{
+            //    MessageBox.Show("Set Property Failed With Error Code[0x" + Convert.ToString(Result, 16) + "]", "Change_V", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    return;
+            //}
+            //Motion.mAcm_AxMoveVel(m_Axishand[3],1);
         }
 
         private void btn_StopPrint_Click(object sender, EventArgs e)
@@ -1710,6 +1719,184 @@ namespace _50
         }
 
         HTuple hv_distenceX = null, hv_distenceY = null, hv_distence = null;
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            //string file = "die";
+            //string file = "fuselage_crude";
+            //string file = "house1";
+            //string file = "servo";
+            //string file = "wing_sd7037-1_6vertical";
+            string file = "cube";
+
+            string dir = Application.StartupPath + @"\..\..\..\..\Models\";
+            string stl_file = dir + file + ".stl";
+            string gcode_file = dir + file + ".gcode";
+            if (LoadStlFile(stl_file)) SaveGcodeFile(gcode_file);
+        }
+
+        private bool LoadStlFile(string filename)
+        {
+            this.stl_file = filename;
+
+            if (!File.Exists(filename))
+            {
+                pictureBox1.Image = null;
+                return false;
+            }
+
+            int w = Convert.ToInt32(txt_stlw.Text);
+            int h = Convert.ToInt32(txt_stlh.Text);
+            int xdiv = Convert.ToInt32(txt_stlxdiv.Text);
+            int ydiv = Convert.ToInt32(txt_stlydiv.Text);
+
+            //slice
+            Stopwatch sw = Stopwatch.StartNew();
+            Mesh mesh = new Mesh(filename);
+            Console.WriteLine("load stl: {0} ms", sw.ElapsedMilliseconds); sw.Restart();
+            mesh.ShiftCenter();
+            mesh.Scale(appset.stl_scale);
+            Console.WriteLine("shift/scale stl: {0} ms", sw.ElapsedMilliseconds); sw.Restart();
+            //float zstep = (mesh.zmax - mesh.zmin) / (xdiv * ydiv);
+            float zstep = appset.zstep;
+            slices = new Slices(mesh, zstep, appset.slice_tol, appset.z_angle * (float)Math.PI / 180f);
+            Console.WriteLine("total slicing: {0} ms", sw.ElapsedMilliseconds); sw.Restart();
+
+            //visualize
+            Visualize vis = new Visualize(w, h);
+            pictureBox1.Image = vis.show_Slices(slices, xdiv, ydiv);
+            Console.WriteLine("visualize: {0} ms", sw.ElapsedMilliseconds); sw.Restart();
+
+            //gcode
+            gcode = new Gcode();
+            gcode.ZStep = appset.zstep;
+            //gcode.header = appset.gcode_header;
+            //gcode.footer = appset.gcode_footer;
+            gcode.WallThickness = appset.WallThickness;
+            gcode.FilamentDiameter = appset.FilamentDiameter;
+            gcode.PrintSpeed = appset.PrintSpeed;
+            gcode.PrintPerimeter = appset.PrintPerimeter;
+            gcode.Append(slices);
+            Console.WriteLine("gcode: {0} ms", sw.ElapsedMilliseconds); sw.Restart();
+
+            //show info
+            txt_InfoSTL.Text =
+                gcode.info().Replace(";", "").Replace("\n", "\r\n") +
+                mesh.ToString() + "\r\n" +
+                string.Format("Mesh Facets    {0:0.}\r\n", mesh.Facets.Length) +
+                string.Format("Layers         {0:0.}\r\n", slices.slices.Count) +
+                string.Format("Line Segments  {0:0.}\r\n", slices.LineSegmentCount());
+
+            //clear settings isdirty flag
+            appset.IsDirtyClearFlag();
+            return true;
+        }
+
+        private bool SaveGcodeFile(string filename)
+        {
+            if (appset.IsDirty())
+            {
+                if (!LoadStlFile(stl_file)) return false;
+            }
+            gcode.save(filename);
+            return true;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (appset.IsDirty()) LoadStlFile(this.stl_file);
+        }
+
+        private void loadSTLToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ld.Title = "Load STL File";
+            ld.Filter = "STL Files|*.stl|All Files|*.*";
+            ld.CheckFileExists = true;
+            if (DialogResult.Cancel == ld.ShowDialog()) return;
+            LoadStlFile(ld.FileName);
+        }
+
+        private void saveGcodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string path = Path.GetFullPath(Path.ChangeExtension(stl_file, ".gcode"));
+
+            sd.Title = "Save G-code File";
+            sd.Filter = "G-code Files|*.gcode|All Files|*.*";
+            sd.OverwritePrompt = true;
+            sd.InitialDirectory = Path.GetDirectoryName(path);
+            sd.FileName = Path.GetFileName(path);
+            if (DialogResult.Cancel == sd.ShowDialog()) return;
+            SaveGcodeFile(sd.FileName);
+
+        }
+
+        private void txt_stlw_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                LoadStlFile(ld.FileName);
+            }
+            catch { }
+        }
+
+        private void txt_stlh_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                LoadStlFile(ld.FileName);
+            }
+            catch { }
+        }
+
+        private void txt_stlxdiv_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                LoadStlFile(ld.FileName);
+            }
+            catch { }
+        }
+
+        private void txt_stlydiv_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                LoadStlFile(ld.FileName);
+            }
+            catch { }
+        }
+
+        private void readGcodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string file = "STL_temp";
+
+            string dir = Application.StartupPath;
+            string stl_file = dir + file + ".stl";
+            string gcode_file = dir + file + ".gcode";
+            SaveGcodeFile(gcode_file);
+
+            dgv_Gcode.ColumnCount = 0;                 //全部舊的程式碼清除掉
+            dgv_Gcode.ColumnCount = 1;
+            dgv_Gcode.Columns[0].Name = "Code";
+
+            string name = ofd_Gcode.FileName;//預設檔名
+
+            string[] text = File.ReadAllLines(gcode_file.ToString());//把存的文件丟到text陣列
+                                                                             //string data_col;    //= null;//引用類型變量的默認值，無法給 Null 為初始值，在自己經驗中都給予 MinValue 來做初始值，而.NET 2.0 以後，可以透過 Nullable 的方式來做初始值給值方式及檢查
+
+
+            foreach (string text_line in text)//foreach 和 for 具有相同的目標：在一個區塊內反覆執行。 主要的不同點在於 foreach 不需要處理結束回圈的條件，此外，foreach 主要是設計於找尋全部的的資料
+                                              // foreach 陳述式是用來逐一查看集合，以取得所需的資訊，但是不能用來加入或移除來源集合的項目，以避免無法預期的副作用(不能出現++或--)。如果您必須加入或移除來源集合的項目，請使用 for迴圈。
+            {
+                //data_col = text_line.Split(';');//分隔
+
+                dgv_Gcode.Rows.Add(text_line);
+            }
+            dgv_Gcode.Columns[0].Width = 1000;
+
+            dgv_Gcode.CurrentCell = dgv_Gcode.Rows[0].Cells[0];//選擇第一行
+        }
+
         private void btn_FindCenter_Click(object sender, EventArgs e)
         {
             timer_Video.Enabled = false;

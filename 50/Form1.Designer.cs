@@ -1,5 +1,6 @@
 ﻿//匯入DLL檔案
 using System;
+using System.Windows.Forms;
 
 using Advantech.Motion;
 
@@ -32,6 +33,9 @@ namespace _50
         IntPtr m_DeviceHandle = IntPtr.Zero;
         IntPtr m_GpHand = IntPtr.Zero;
         IntPtr[] m_Axishand = new IntPtr[32];
+
+        OpenFileDialog ld = new OpenFileDialog();
+        SaveFileDialog sd = new SaveFileDialog();
 
         ushort[] sp = new ushort[4] ;
         double[] Cmdp = new double[4];
@@ -181,9 +185,28 @@ namespace _50
             this.lb_USBHeating = new System.Windows.Forms.ListBox();
             this.btn_HeatingTrigger = new System.Windows.Forms.Button();
             this.tp1_HlaconTest = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.btn_FindCenter = new System.Windows.Forms.Button();
             this.btn_OpenCamera = new System.Windows.Forms.Button();
             this.hWindowControl1 = new HalconDotNet.HWindowControl();
+            this.tp1_STL = new System.Windows.Forms.TabPage();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.txt_InfoSTL = new System.Windows.Forms.TextBox();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.txt_stlh = new System.Windows.Forms.TextBox();
+            this.txt_stlydiv = new System.Windows.Forms.TextBox();
+            this.txt_stlxdiv = new System.Windows.Forms.TextBox();
+            this.txt_stlw = new System.Windows.Forms.TextBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadSTLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveGcodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.readGcodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.time_State = new System.Windows.Forms.Timer(this.components);
             this.ofd_LoadConfigFile = new System.Windows.Forms.OpenFileDialog();
             this.ofd_Gcode = new System.Windows.Forms.OpenFileDialog();
@@ -193,10 +216,6 @@ namespace _50
             this.timer_USB = new System.Windows.Forms.Timer(this.components);
             this.timer_HomeWait = new System.Windows.Forms.Timer(this.components);
             this.timer_Video = new System.Windows.Forms.Timer(this.components);
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.tcl_Window00.SuspendLayout();
             this.tp1_Test.SuspendLayout();
             this.gbx_Gcode.SuspendLayout();
@@ -222,6 +241,10 @@ namespace _50
             this.gbx_DeviceConnect.SuspendLayout();
             this.tp1_Heating.SuspendLayout();
             this.tp1_HlaconTest.SuspendLayout();
+            this.tp1_STL.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tcl_Window00
@@ -229,6 +252,7 @@ namespace _50
             this.tcl_Window00.Controls.Add(this.tp1_Test);
             this.tcl_Window00.Controls.Add(this.tp1_Heating);
             this.tcl_Window00.Controls.Add(this.tp1_HlaconTest);
+            this.tcl_Window00.Controls.Add(this.tp1_STL);
             this.tcl_Window00.Location = new System.Drawing.Point(0, 0);
             this.tcl_Window00.Name = "tcl_Window00";
             this.tcl_Window00.SelectedIndex = 0;
@@ -255,6 +279,7 @@ namespace _50
             // 
             // button2
             // 
+            this.button2.Enabled = false;
             this.button2.Location = new System.Drawing.Point(711, 286);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(88, 19);
@@ -1361,6 +1386,37 @@ namespace _50
             this.tp1_HlaconTest.Text = "Hlacon-Test";
             this.tp1_HlaconTest.UseVisualStyleBackColor = true;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(114, 404);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 4;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(8, 404);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(100, 22);
+            this.textBox3.TabIndex = 3;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(190, 376);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(100, 22);
+            this.textBox2.TabIndex = 3;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(84, 376);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 22);
+            this.textBox1.TabIndex = 3;
+            // 
             // btn_FindCenter
             // 
             this.btn_FindCenter.Location = new System.Drawing.Point(3, 374);
@@ -1392,6 +1448,144 @@ namespace _50
             this.hWindowControl1.Size = new System.Drawing.Size(480, 300);
             this.hWindowControl1.TabIndex = 0;
             this.hWindowControl1.WindowSize = new System.Drawing.Size(480, 300);
+            // 
+            // tp1_STL
+            // 
+            this.tp1_STL.Controls.Add(this.pictureBox1);
+            this.tp1_STL.Controls.Add(this.txt_InfoSTL);
+            this.tp1_STL.Controls.Add(this.propertyGrid1);
+            this.tp1_STL.Controls.Add(this.panel1);
+            this.tp1_STL.Controls.Add(this.menuStrip1);
+            this.tp1_STL.Location = new System.Drawing.Point(4, 22);
+            this.tp1_STL.Name = "tp1_STL";
+            this.tp1_STL.Size = new System.Drawing.Size(879, 790);
+            this.tp1_STL.TabIndex = 3;
+            this.tp1_STL.Text = "STL";
+            this.tp1_STL.UseVisualStyleBackColor = true;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(229, 27);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(647, 760);
+            this.pictureBox1.TabIndex = 4;
+            this.pictureBox1.TabStop = false;
+            // 
+            // txt_InfoSTL
+            // 
+            this.txt_InfoSTL.Location = new System.Drawing.Point(3, 506);
+            this.txt_InfoSTL.Multiline = true;
+            this.txt_InfoSTL.Name = "txt_InfoSTL";
+            this.txt_InfoSTL.ReadOnly = true;
+            this.txt_InfoSTL.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txt_InfoSTL.Size = new System.Drawing.Size(220, 281);
+            this.txt_InfoSTL.TabIndex = 3;
+            // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.Location = new System.Drawing.Point(3, 88);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(220, 412);
+            this.propertyGrid1.TabIndex = 2;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.txt_stlh);
+            this.panel1.Controls.Add(this.txt_stlydiv);
+            this.panel1.Controls.Add(this.txt_stlxdiv);
+            this.panel1.Controls.Add(this.txt_stlw);
+            this.panel1.Controls.Add(this.button3);
+            this.panel1.Location = new System.Drawing.Point(3, 27);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(220, 55);
+            this.panel1.TabIndex = 1;
+            // 
+            // txt_stlh
+            // 
+            this.txt_stlh.Location = new System.Drawing.Point(110, 33);
+            this.txt_stlh.Name = "txt_stlh";
+            this.txt_stlh.Size = new System.Drawing.Size(47, 22);
+            this.txt_stlh.TabIndex = 1;
+            this.txt_stlh.Text = "700";
+            this.txt_stlh.TextChanged += new System.EventHandler(this.txt_stlh_TextChanged);
+            // 
+            // txt_stlydiv
+            // 
+            this.txt_stlydiv.Location = new System.Drawing.Point(163, 33);
+            this.txt_stlydiv.Name = "txt_stlydiv";
+            this.txt_stlydiv.Size = new System.Drawing.Size(47, 22);
+            this.txt_stlydiv.TabIndex = 1;
+            this.txt_stlydiv.Text = "10";
+            this.txt_stlydiv.TextChanged += new System.EventHandler(this.txt_stlydiv_TextChanged);
+            // 
+            // txt_stlxdiv
+            // 
+            this.txt_stlxdiv.Location = new System.Drawing.Point(163, 5);
+            this.txt_stlxdiv.Name = "txt_stlxdiv";
+            this.txt_stlxdiv.Size = new System.Drawing.Size(47, 22);
+            this.txt_stlxdiv.TabIndex = 1;
+            this.txt_stlxdiv.Text = "10";
+            this.txt_stlxdiv.TextChanged += new System.EventHandler(this.txt_stlxdiv_TextChanged);
+            // 
+            // txt_stlw
+            // 
+            this.txt_stlw.Location = new System.Drawing.Point(110, 5);
+            this.txt_stlw.Name = "txt_stlw";
+            this.txt_stlw.Size = new System.Drawing.Size(47, 22);
+            this.txt_stlw.TabIndex = 1;
+            this.txt_stlw.Text = "600";
+            this.txt_stlw.TextChanged += new System.EventHandler(this.txt_stlw_TextChanged);
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(5, 3);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(99, 23);
+            this.button3.TabIndex = 2;
+            this.button3.Text = "Apply Settings";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(879, 24);
+            this.menuStrip1.TabIndex = 0;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadSTLToolStripMenuItem,
+            this.saveGcodeToolStripMenuItem,
+            this.readGcodeToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // loadSTLToolStripMenuItem
+            // 
+            this.loadSTLToolStripMenuItem.Name = "loadSTLToolStripMenuItem";
+            this.loadSTLToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loadSTLToolStripMenuItem.Text = "Load STL";
+            this.loadSTLToolStripMenuItem.Click += new System.EventHandler(this.loadSTLToolStripMenuItem_Click);
+            // 
+            // saveGcodeToolStripMenuItem
+            // 
+            this.saveGcodeToolStripMenuItem.Name = "saveGcodeToolStripMenuItem";
+            this.saveGcodeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveGcodeToolStripMenuItem.Text = "Save G-code";
+            this.saveGcodeToolStripMenuItem.Click += new System.EventHandler(this.saveGcodeToolStripMenuItem_Click);
+            // 
+            // readGcodeToolStripMenuItem
+            // 
+            this.readGcodeToolStripMenuItem.Name = "readGcodeToolStripMenuItem";
+            this.readGcodeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.readGcodeToolStripMenuItem.Text = "Read G-code";
+            this.readGcodeToolStripMenuItem.Click += new System.EventHandler(this.readGcodeToolStripMenuItem_Click);
             // 
             // time_State
             // 
@@ -1430,47 +1624,18 @@ namespace _50
             // 
             this.timer_Video.Tick += new System.EventHandler(this.timer1_Tick_1);
             // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(84, 376);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 22);
-            this.textBox1.TabIndex = 3;
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(190, 376);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 22);
-            this.textBox2.TabIndex = 3;
-            // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(8, 404);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 22);
-            this.textBox3.TabIndex = 3;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(114, 404);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_1);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(886, 814);
             this.Controls.Add(this.tcl_Window00);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Shown += new System.EventHandler(this.Form1_Shown);
             this.tcl_Window00.ResumeLayout(false);
             this.tp1_Test.ResumeLayout(false);
             this.gbx_Gcode.ResumeLayout(false);
@@ -1505,6 +1670,13 @@ namespace _50
             this.tp1_Heating.PerformLayout();
             this.tp1_HlaconTest.ResumeLayout(false);
             this.tp1_HlaconTest.PerformLayout();
+            this.tp1_STL.ResumeLayout(false);
+            this.tp1_STL.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1637,6 +1809,21 @@ namespace _50
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TabPage tp1_STL;
+        private System.Windows.Forms.TextBox txt_InfoSTL;
+        private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadSTLToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveGcodeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem readGcodeToolStripMenuItem;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.TextBox txt_stlh;
+        private System.Windows.Forms.TextBox txt_stlydiv;
+        private System.Windows.Forms.TextBox txt_stlxdiv;
+        private System.Windows.Forms.TextBox txt_stlw;
     }
 }
 
